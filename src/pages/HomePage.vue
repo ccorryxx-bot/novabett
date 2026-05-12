@@ -1,13 +1,7 @@
 <template>
-  <div class="min-h-screen bg-[#0a0a14] text-white pb-20 relative">
-    <!-- Background orbs -->
-    <div class="fixed inset-0 pointer-events-none z-0">
-      <div class="absolute top-0 -left-32 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
-      <div class="absolute bottom-0 -right-32 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay:1s"></div>
-    </div>
-
-    <!-- HEADER -->
-    <header class="sticky top-0 z-30 bg-black/70 backdrop-blur-lg border-b border-white/10 px-4 py-2 flex items-center justify-between">
+  <div class="min-h-screen bg-black text-white pb-24 relative">
+    <!-- HEADER (transparent, no bg) -->
+    <header class="sticky top-0 z-30 flex items-center justify-between px-4 py-3">
       <h1 class="text-xl font-black tracking-tighter">
         <span class="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]">NovaBETT</span>
       </h1>
@@ -20,11 +14,11 @@
       </div>
     </header>
 
-    <!-- CAROUSEL (emoji-free) -->
-    <div class="px-4 pt-4 relative">
-      <div class="rounded-2xl overflow-hidden relative h-44 bg-black/30 backdrop-blur-sm border border-white/10 shadow-2xl">
+    <!-- CAROUSEL (unchanged) -->
+    <div class="px-4 pt-2 relative">
+      <div class="rounded-2xl overflow-hidden relative h-44 bg-white/5 backdrop-blur-sm border border-white/10 shadow-2xl">
         <div class="absolute inset-0 flex transition-transform duration-500" :style="{ transform: `translateX(-${carouselIndex * 100}%)` }">
-          <div v-for="(img, i) in carouselImages" :key="i" class="w-full h-full flex-shrink-0 flex items-center justify-center text-4xl font-bold text-white/20" :style="{ background: img.color }">
+          <div v-for="(img, i) in carouselImages" :key="i" class="w-full h-full flex-shrink-0 flex items-center justify-center text-xl font-bold text-white/30" :style="{ background: img.color }">
             <span class="text-white/60 text-sm">{{ img.title }}</span>
           </div>
         </div>
@@ -36,7 +30,7 @@
       </div>
     </div>
 
-    <!-- JACKPOT BANNER (emoji removed) -->
+    <!-- JACKPOT BANNER (kept clean) -->
     <div class="mx-4 mt-3 relative">
       <div class="absolute -inset-1 bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-600 rounded-xl blur-md opacity-75 animate-pulse"></div>
       <div class="relative bg-black/80 backdrop-blur-xl rounded-xl border border-yellow-500/30 px-4 py-4 overflow-hidden shadow-2xl">
@@ -77,9 +71,19 @@
       </div>
     </div>
 
-    <!-- BOTTOM NAVIGATION (emoji-free, sleek icons) -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-xl border-t border-white/10 z-40">
-      <div class="flex justify-around items-center py-2">
+    <!-- FOOTER (Terms, etc. placeholder) -->
+    <div class="px-4 mt-8 text-center text-xs text-gray-500">
+      <p>&copy; 2026 NovaBETT. All rights reserved.</p>
+      <div class="flex justify-center gap-4 mt-2">
+        <span>Terms of Service</span>
+        <span>Privacy Policy</span>
+        <span>Contact Us</span>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV (transparent, no bg) -->
+    <nav class="fixed bottom-0 left-0 right-0 z-40 py-2">
+      <div class="flex justify-around items-center">
         <router-link to="/home" class="flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-colors" :class="$route.path === '/home' ? 'text-yellow-400' : 'text-gray-400'">
           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
           <span class="text-[10px]">{{ $t('home') }}</span>
@@ -193,7 +197,6 @@ const filteredGames = computed(() => {
 })
 
 const openGame = async (game) => {
-  // Game launch logic
   alert(`Opening ${game.name}`)
 }
 
