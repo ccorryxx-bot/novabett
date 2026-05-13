@@ -7,7 +7,7 @@
           Welcome to <span class="text-yellow-400">NovaBETT</span>
         </p>
 
-        <!-- Brand Name with animated glow (no jackpot banner) -->
+        <!-- Brand Name with animated glow -->
         <div class="text-center">
           <h1 class="text-4xl font-black tracking-tighter relative inline-block">
             <span class="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto] drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]">
@@ -24,9 +24,8 @@
             <button @click="toggleSearch" class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 pointer-events-auto">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </button>
-            <!-- Single Login button (when logged out) -->
             <template v-if="!isLoggedIn">
-              <button @click="showAuthModal = true" class="text-sm font-semibold text-gray-300 hover:text-white transition-colors">Login</button>
+              <button @click="showAuthModal = true; authTab = 'login'" class="text-sm font-semibold text-gray-300 hover:text-white transition-colors">Login</button>
             </template>
           </div>
           <div class="flex items-center gap-2">
@@ -167,35 +166,63 @@
       </div>
     </nav>
 
-    <!-- ===== AUTH MODAL (Login / Register Tabs) ===== -->
+    <!-- ===== AUTH MODAL (Luxury Login / Register Tabs) ===== -->
     <Teleport to="body">
       <Transition name="modal">
-        <div v-if="showAuthModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" @click.self="showAuthModal = false">
-          <div class="bg-[#141428] border border-white/10 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-slide-up max-h-[90vh] overflow-y-auto">
+        <div v-if="showAuthModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md" @click.self="showAuthModal = false">
+          <div class="bg-[#0a0a0a] border border-yellow-600/40 rounded-3xl w-full max-w-sm p-6 shadow-2xl shadow-yellow-500/10 animate-slide-up max-h-[90vh] overflow-y-auto">
             <!-- Tabs -->
-            <div class="flex mb-6">
-              <button @click="authTab = 'login'" :class="authTab === 'login' ? 'bg-white text-black' : 'bg-white/5 text-gray-400'" class="flex-1 py-2 rounded-l-full text-sm font-semibold transition-colors">Login</button>
-              <button @click="authTab = 'register'" :class="authTab === 'register' ? 'bg-blue-600 text-white' : 'bg-white/5 text-gray-400'" class="flex-1 py-2 rounded-r-full text-sm font-semibold transition-colors">Register</button>
+            <div class="flex mb-8">
+              <button @click="authTab = 'login'" class="flex-1 py-2.5 rounded-l-full text-sm font-bold transition-all duration-300"
+                :class="authTab === 'login' ? 'bg-gradient-to-r from-yellow-500 to-amber-600 text-black shadow-lg shadow-yellow-500/30' : 'bg-white/5 text-gray-400 hover:bg-white/10'">
+                Login
+              </button>
+              <button @click="authTab = 'register'" class="flex-1 py-2.5 rounded-r-full text-sm font-bold transition-all duration-300"
+                :class="authTab === 'register' ? 'bg-gradient-to-r from-yellow-500 to-amber-600 text-black shadow-lg shadow-yellow-500/30' : 'bg-white/5 text-gray-400 hover:bg-white/10'">
+                Register
+              </button>
             </div>
 
             <!-- Login Form -->
-            <div v-if="authTab === 'login'" class="space-y-4">
-              <input v-model="loginUsername" placeholder="Username" class="w-full p-3 rounded-2xl bg-white/5 border border-white/10 text-white uppercase focus:outline-none focus:border-white/30 transition-all text-sm" @input="loginUsername = loginUsername.toUpperCase()" />
-              <input v-model="loginPassword" type="password" placeholder="Password" class="w-full p-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-white/30 transition-all text-sm" />
-              <button @click="doLogin" :disabled="loginLoading" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3 rounded-2xl shadow transition-all disabled:opacity-50">{{ loginLoading ? 'Signing In...' : 'Sign In' }}</button>
+            <div v-if="authTab === 'login'" class="space-y-5">
+              <div>
+                <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Username</label>
+                <input v-model="loginUsername" type="text" class="w-full p-3 rounded-xl bg-[#1a1a1a] border border-gray-700 text-white placeholder-transparent focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500/50 transition-all text-sm" @input="loginUsername = loginUsername.toUpperCase()" />
+              </div>
+              <div>
+                <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Password</label>
+                <input v-model="loginPassword" type="password" class="w-full p-3 rounded-xl bg-[#1a1a1a] border border-gray-700 text-white placeholder-transparent focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500/50 transition-all text-sm" />
+              </div>
+              <button @click="doLogin" :disabled="loginLoading" class="w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-bold py-3 rounded-xl shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                {{ loginLoading ? 'Signing In...' : 'Sign In' }}
+              </button>
               <p class="text-red-400 text-sm text-center">{{ loginError }}</p>
             </div>
 
-            <!-- Register Form -->
-            <div v-else class="space-y-4">
-              <input v-model="regUsername" placeholder="Username" class="w-full p-3 rounded-2xl bg-white/5 border border-white/10 text-white uppercase focus:outline-none focus:border-white/30 transition-all text-sm" @input="regUsername = regUsername.toUpperCase()" />
-              <input v-model="regPhone" type="tel" placeholder="Phone (9...)" class="w-full p-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-white/30 transition-all text-sm" />
-              <input v-model="regPassword" type="password" placeholder="Password" class="w-full p-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-white/30 transition-all text-sm" />
-              <button @click="doRegister" :disabled="regLoading" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-2xl shadow transition-all disabled:opacity-50">{{ regLoading ? 'Creating Account...' : 'Join NovaBETT' }}</button>
+            <!-- Register Form (Luxury Premium) -->
+            <div v-else class="space-y-5">
+              <div>
+                <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Username</label>
+                <input v-model="regUsername" type="text" class="w-full p-3 rounded-xl bg-[#1a1a1a] border border-gray-700 text-white placeholder-transparent focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500/50 transition-all text-sm" @input="regUsername = regUsername.toUpperCase()" />
+                <p class="text-[10px] text-gray-500 mt-1 ml-1">e.g. MOEMOE</p>
+              </div>
+              <div>
+                <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Password</label>
+                <input v-model="regPassword" type="password" class="w-full p-3 rounded-xl bg-[#1a1a1a] border border-gray-700 text-white placeholder-transparent focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500/50 transition-all text-sm" />
+                <p class="text-[10px] text-gray-500 mt-1 ml-1">e.g. moe#223</p>
+              </div>
+              <div>
+                <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Phone Number</label>
+                <input v-model="regPhone" type="tel" class="w-full p-3 rounded-xl bg-[#1a1a1a] border border-gray-700 text-white placeholder-transparent focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500/50 transition-all text-sm" />
+                <p class="text-[10px] text-gray-500 mt-1 ml-1">e.g. 09123456789 or 9123456789</p>
+              </div>
+              <button @click="doRegister" :disabled="regLoading" class="w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-bold py-3 rounded-xl shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                {{ regLoading ? 'Creating Account...' : 'Join NovaBETT' }}
+              </button>
               <p class="text-red-400 text-sm text-center">{{ regError }}</p>
             </div>
 
-            <button @click="showAuthModal = false" class="absolute top-4 right-4 text-gray-400 hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+            <button @click="showAuthModal = false" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
           </div>
         </div>
       </Transition>
@@ -224,10 +251,12 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
 import { supabase } from '@/lib/supabase'
 import DepositModal from '@/components/DepositModal.vue'
 import WithdrawModal from '@/components/WithdrawModal.vue'
 
+const route = useRoute()
 const { locale } = useI18n()
 const currentLang = ref(locale.value)
 const toggleLanguage = () => {
@@ -257,8 +286,13 @@ const showAuthModal = ref(false)
 const authTab = ref('login') // 'login' or 'register'
 
 onMounted(async () => {
-  // Ensure modals are hidden on load
-  showAuthModal.value = false
+  // Check if we should open auth modal from router redirect
+  if (route.query.auth === 'login') {
+    showAuthModal.value = true
+    authTab.value = 'login'
+    // Remove query param without reload
+    window.history.replaceState({}, document.title, window.location.pathname)
+  }
   const { data: { session } } = await supabase.auth.getSession()
   if (session) await loadUserInfo()
   const savedLang = localStorage.getItem('lang')
@@ -284,7 +318,7 @@ async function fetchBalance() {
   try {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    const { data: wallet } = await supabase.from('wallets').select('main_balance').select('main_balance').eq('user_id', user.id).single()
+    const { data: wallet } = await supabase.from('wallets').select('main_balance').eq('user_id', user.id).single()
     mainBalance.value = wallet?.main_balance || 0
   } catch (e) { console.error(e) } finally { balanceLoading.value = false }
 }
@@ -300,8 +334,12 @@ async function doLogin() {
   loginLoading.value = true
   try {
     const email = `${loginUsername.value.toUpperCase()}@novabett.internal`
-    const { error } = await supabase.auth.signInWithPassword({ email, password: loginPassword.value })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password: loginPassword.value })
     if (error) throw error
+    // Store token
+    if (data.session?.access_token) {
+      localStorage.setItem('sb_token', data.session.access_token)
+    }
     await loadUserInfo()
     showAuthModal.value = false
     loginUsername.value = ''; loginPassword.value = ''
@@ -327,14 +365,18 @@ async function doRegister() {
     const data = await res.json()
     if (data.error) throw new Error(data.error)
     const email = `${regUsername.value.toUpperCase()}@novabett.internal`
-    await supabase.auth.signInWithPassword({ email, password: regPassword.value })
+    const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({ email, password: regPassword.value })
+    if (loginError) throw loginError
+    if (loginData.session?.access_token) {
+      localStorage.setItem('sb_token', loginData.session.access_token)
+    }
     await loadUserInfo()
     showAuthModal.value = false
     regUsername.value = ''; regPhone.value = ''; regPassword.value = ''
   } catch (e) { regError.value = e.message } finally { regLoading.value = false }
 }
 
-// Jackpot (still kept but not displayed, just logic)
+// Jackpot logic (unused but kept)
 const jackpot = ref(893619157998)
 const displayedJackpot = ref('893,619,157,998')
 const formatNumber = (num) => new Intl.NumberFormat('en-US').format(num)

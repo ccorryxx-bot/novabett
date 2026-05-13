@@ -10,7 +10,7 @@ import AdminDashboard from '@/pages/AdminDashboard.vue'
 
 const routes = [
   { path: '/', redirect: '/home' },
-  { path: '/home', component: HomePage }, // No auth required
+  { path: '/home', component: HomePage },
   { path: '/promotions', component: PromotionsPage, meta: { requiresAuth: true } },
   { path: '/agent', component: AgentDashboard, meta: { requiresAuth: true } },
   { path: '/service', component: ServicePage, meta: { requiresAuth: true } },
@@ -28,7 +28,8 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem('sb_token')
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next('/home') // redirect to home instead of login
+    // Redirect to Home with query parameter to trigger login modal
+    next('/home?auth=login')
   } else {
     next()
   }
