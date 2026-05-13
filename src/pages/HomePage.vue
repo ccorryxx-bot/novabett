@@ -781,6 +781,7 @@ function animateValue(start, end) {
 </script>
 
 <style scoped>
+@reference "tailwindcss";
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
