@@ -45,7 +45,6 @@
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </button>
             <template v-if="!isLoggedIn">
-              <!-- Primary Button inline -->
               <button @click="showAuthModal = true; authTab = 'login'"
                 class="relative overflow-hidden bg-gradient-to-r from-yellow-500 to-amber-600 text-black text-sm font-bold px-5 py-2.5 rounded-full shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200">
                 <span class="relative z-10">Login</span>
@@ -75,9 +74,7 @@
             </div>
           </div>
           <div class="flex gap-2">
-            <!-- Primary Button inline -->
             <button @click="showDepositModal = true" class="relative overflow-hidden bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-bold rounded-full shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 text-xs py-2 px-4">Deposit</button>
-            <!-- Secondary Button inline -->
             <button @click="showWithdrawModal = true" class="bg-white/10 hover:bg-white/20 text-white font-bold rounded-full border border-white/10 active:scale-95 transition-all text-xs py-2 px-4">Withdraw</button>
           </div>
         </div>
@@ -129,7 +126,7 @@
               <div class="p-2 h-5 bg-white/5 rounded mt-1"></div>
             </div>
           </template>
-          <!-- Actual Cards (from Supabase) -->
+          <!-- Actual Cards (from Supabase or fallback) -->
           <div v-else v-for="game in filteredGames" :key="game.id" @click="openGame(game)"
             class="group bg-[#111] border border-white/5 rounded-2xl overflow-hidden active:scale-95 transition-all duration-200 cursor-pointer hover:border-white/20 hover:shadow-xl">
             <div class="relative w-full aspect-square bg-black/40 flex items-center justify-center overflow-hidden">
@@ -139,6 +136,15 @@
             </div>
             <div class="p-2"><h3 class="text-[11px] font-semibold leading-tight truncate text-gray-300">{{ game.name }}</h3></div>
           </div>
+        </div>
+        <!-- Error State -->
+        <div v-if="!loadingGames && fetchError" class="text-center py-8">
+          <p class="text-red-400 text-sm">{{ fetchError }}</p>
+          <button @click="fetchGames" class="mt-3 bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-4 py-2 rounded-full">Retry</button>
+        </div>
+        <!-- Empty State -->
+        <div v-if="!loadingGames && !fetchError && filteredGames.length === 0" class="text-center py-8 text-gray-500">
+          <p>No games found.</p>
         </div>
       </div>
 
@@ -455,20 +461,51 @@ async function doRegister() {
   } finally { regLoading.value = false }
 }
 
-// Supabase Games Fetch
+// Supabase Games Fetch with fallback
 const games = ref([])
 const loadingGames = ref(true)
+const fetchError = ref(null)
+
+const DUMMY_GAMES = [
+  { id: 'dummy-1', name: 'Jackpot Fishing', provider: 'JILI', category: 'Fishing', image_url: '🎣' },
+  { id: 'dummy-2', name: 'Gates of Olympus', provider: 'Pragmatic', category: 'Slot', image_url: '⚡' },
+  { id: 'dummy-3', name: 'Mahjong Ways 2', provider: 'PG', category: 'Slot', image_url: '🀄' },
+  { id: 'dummy-4', name: 'Charge Buffalo', provider: 'JILI', category: 'Slot', image_url: '🐃' },
+  { id: 'dummy-5', name: 'Money Boxing', provider: 'PP', category: 'Slot', image_url: '🥊' },
+  { id: 'dummy-6', name: 'Boxing King', provider: 'PG', category: 'Slot', image_url: '👑' },
+  { id: 'dummy-7', name: 'Fortune Coins', provider: 'PP', category: 'Slot', image_url: '🪙' },
+  { id: 'dummy-8', name: 'Fortune Gems 2', provider: 'PG', category: 'Slot', image_url: '💎' },
+  { id: 'dummy-9', name: 'Dragon Fortune', provider: 'JILI', category: 'Slot', image_url: '🐉' },
+  { id: 'dummy-10', name: 'Golden Empire', provider: 'Pragmatic', category: 'Slot', image_url: '🏛️' },
+  { id: 'dummy-11', name: 'Super Ace', provider: 'PG', category: 'Slot', image_url: '🃏' },
+  { id: 'dummy-12', name: 'Crazy777', provider: 'JILI', category: 'Slot', image_url: '🎰' }
+]
+
 async function fetchGames() {
   loadingGames.value = true
-  const { data, error } = await supabase
-    .from('games')
-    .select('*')
-    .eq('is_active', true)
-    .order('provider', { ascending: true })
-  if (!error && data) {
-    games.value = data
+  fetchError.value = null
+  try {
+    const { data, error } = await supabase
+      .from('games')
+      .select('*')
+      .eq('is_active', true)
+      .order('provider', { ascending: true })
+    if (error) throw error
+    if (data && data.length > 0) {
+      games.value = data
+    } else {
+      // Fallback to dummy games if Supabase table is empty
+      games.value = DUMMY_GAMES
+      addToast('Loaded demo games', 'warning')
+    }
+  } catch (e) {
+    console.error('Game fetch error:', e)
+    fetchError.value = 'Failed to load games. Using demo data.'
+    games.value = DUMMY_GAMES
+    addToast('Loaded demo games', 'error')
+  } finally {
+    loadingGames.value = false
   }
-  loadingGames.value = false
 }
 
 // Jackpot (animated counter)
