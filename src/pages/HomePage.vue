@@ -1,5 +1,25 @@
 <template>
   <div class="min-h-screen bg-black text-white flex flex-col selection:bg-yellow-500/30">
+    <!-- Toast Container -->
+    <Teleport to="body">
+      <div class="fixed top-4 right-4 z-[100] space-y-2 w-72 pointer-events-none">
+        <TransitionGroup name="toast">
+          <div v-for="toast in toasts" :key="toast.id"
+            class="pointer-events-auto p-3 rounded-xl shadow-2xl backdrop-blur-md flex items-center gap-2 text-sm font-semibold animate-slide-in-right"
+            :class="{
+              'bg-emerald-500/20 border border-emerald-500/30 text-emerald-400': toast.type === 'success',
+              'bg-red-500/20 border border-red-500/30 text-red-400': toast.type === 'error',
+              'bg-yellow-500/20 border border-yellow-500/30 text-yellow-400': toast.type === 'warning'
+            }">
+            <span v-if="toast.type === 'success'">✓</span>
+            <span v-else-if="toast.type === 'error'">✕</span>
+            <span v-else>⚠</span>
+            <span>{{ toast.message }}</span>
+          </div>
+        </TransitionGroup>
+      </div>
+    </Teleport>
+
     <div class="flex-1">
       <div class="px-4 pt-6 pb-2 space-y-4 relative z-10">
         <!-- Welcome Text -->
@@ -7,7 +27,7 @@
           Welcome to <span class="text-yellow-400">NovaBETT</span>
         </p>
 
-        <!-- Brand Name with animated glow -->
+        <!-- Brand Name -->
         <div class="text-center">
           <h1 class="text-4xl font-black tracking-tighter relative inline-block">
             <span class="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto] drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]">
@@ -21,15 +41,20 @@
         <!-- Top row: Search + Login/User info -->
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <button @click="toggleSearch" class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10 pointer-events-auto">
+            <button @click="toggleSearch" class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </button>
+            <!-- Attractive Login Button -->
             <template v-if="!isLoggedIn">
-              <button @click="showAuthModal = true; authTab = 'login'" class="text-sm font-semibold text-gray-300 hover:text-white transition-colors">Login</button>
+              <button @click="showAuthModal = true; authTab = 'login'"
+                class="relative overflow-hidden bg-gradient-to-r from-yellow-500 to-amber-600 text-black text-sm font-bold px-5 py-2.5 rounded-full shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200">
+                <span class="relative z-10">Login</span>
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700"></div>
+              </button>
             </template>
           </div>
           <div class="flex items-center gap-2">
-            <button @click="toggleLanguage" class="text-xs bg-white/5 hover:bg-white/10 text-gray-400 px-3 py-1 rounded-full transition-all pointer-events-auto">
+            <button @click="toggleLanguage" class="text-xs bg-white/5 hover:bg-white/10 text-gray-400 px-3 py-1 rounded-full transition-all">
               {{ currentLang === 'en' ? 'မြန်မာ' : 'English' }}
             </button>
           </div>
@@ -50,12 +75,12 @@
             </div>
           </div>
           <div class="flex gap-2">
-            <button @click="showDepositModal = true" class="bg-white hover:bg-gray-200 text-black text-xs font-bold px-4 py-2 rounded-full active:scale-95 transition-all">Deposit</button>
-            <button @click="showWithdrawModal = true" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-4 py-2 rounded-full border border-white/10 active:scale-95 transition-all">Withdraw</button>
+            <button @click="showDepositModal = true" class="btn-primary text-xs py-2 px-4">Deposit</button>
+            <button @click="showWithdrawModal = true" class="btn-secondary text-xs py-2 px-4">Withdraw</button>
           </div>
         </div>
 
-        <!-- Search bar (togglable) -->
+        <!-- Search bar -->
         <div v-if="searchVisible" class="relative">
           <input v-model="searchQuery" type="text" placeholder="Search games..." class="w-full pl-10 pr-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-sm" />
           <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -78,7 +103,7 @@
         </div>
       </div>
 
-      <!-- Game Categories with Provider Logos -->
+      <!-- Game Categories -->
       <div class="px-4 pt-6 pb-3">
         <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Game Categories</h2>
         <div class="flex gap-2 overflow-x-auto no-scrollbar">
@@ -92,10 +117,18 @@
         </div>
       </div>
 
-      <!-- Game Cards Grid -->
+      <!-- Game Cards Grid (with Skeleton Loading) -->
       <div class="px-4">
         <div class="grid grid-cols-3 gap-3">
-          <div v-for="game in filteredGames" :key="game.id" @click="openGame(game)"
+          <!-- Skeleton Loader -->
+          <template v-if="loadingGames">
+            <div v-for="n in 9" :key="n" class="rounded-2xl bg-[#111] border border-white/5 overflow-hidden animate-pulse">
+              <div class="aspect-square bg-white/5"></div>
+              <div class="p-2 h-5 bg-white/5 rounded mt-1"></div>
+            </div>
+          </template>
+          <!-- Actual Cards -->
+          <div v-else v-for="game in filteredGames" :key="game.id" @click="openGame(game)"
             class="group bg-[#111] border border-white/5 rounded-2xl overflow-hidden active:scale-95 transition-all duration-200 cursor-pointer hover:border-white/20 hover:shadow-xl">
             <div class="relative w-full aspect-square bg-black/40 flex items-center justify-center overflow-hidden">
               <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"></div>
@@ -107,132 +140,153 @@
         </div>
       </div>
 
-      <!-- Extra space & footer -->
+      <!-- Extra space & more games -->
       <div class="h-6"></div>
       <div class="px-4 text-center text-xs text-gray-600">
         <p class="py-4">More games coming soon...</p>
       </div>
       <div class="h-8 border-t border-white/5 mx-4"></div>
 
-      <!-- Footer Buttons -->
-      <div class="px-4 pb-24 space-y-3 mt-4">
-        <div class="grid grid-cols-3 gap-3">
-          <button @click="showFooterModal('team')" class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-3 text-center text-xs font-semibold text-gray-400 hover:text-white transition-all">NovaBETT Team</button>
-          <button @click="showFooterModal('terms')" class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-3 text-center text-xs font-semibold text-gray-400 hover:text-white transition-all">Terms of Service</button>
-          <button @click="showFooterModal('plus18')" class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-3 text-center text-xs font-semibold text-gray-400 hover:text-white transition-all">18+</button>
-        </div>
-        <p class="text-center text-[10px] text-gray-600">&copy; 2026 NovaBETT. All rights reserved.</p>
+      <!-- Footer (stacked vertically) -->
+      <div class="px-4 pb-40 space-y-3 mt-4">
+        <button @click="showFooterModal('team')" class="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 text-left text-sm font-semibold text-gray-300 hover:text-white transition-all">
+          NovaBETT Team
+        </button>
+        <button @click="showFooterModal('terms')" class="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 text-left text-sm font-semibold text-gray-300 hover:text-white transition-all">
+          Terms of Service
+        </button>
+        <button @click="showFooterModal('plus18')" class="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 text-left text-sm font-semibold text-gray-300 hover:text-white transition-all">
+          18+
+        </button>
+        <p class="text-center text-[10px] text-gray-600 pt-4">&copy; 2026 NovaBETT. All rights reserved.</p>
       </div>
     </div>
 
-    <!-- Bottom Navigation (fixed) -->
+    <!-- Bottom Navigation -->
     <nav class="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-xl border-t border-white/10 z-50 pointer-events-auto safe-area-bottom">
       <div class="flex justify-around items-center py-2 px-1">
-        <router-link to="/home" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200 pointer-events-auto" :class="$route.path === '/home' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
-          <div class="relative">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-            <span v-if="$route.path === '/home'" class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full"></span>
-          </div>
+        <router-link to="/home" class="nav-item" :class="$route.path === '/home' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
           <span class="text-[10px] font-semibold">Home</span>
         </router-link>
-        <router-link to="/promotions" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200 pointer-events-auto" :class="$route.path === '/promotions' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
-          <div class="relative">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 12v8H4v-8l8-8 8 8zm-2 2H6v4h12v-4zM12 2l-8 8h16l-8-8z"/></svg>
-            <span v-if="$route.path === '/promotions'" class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full"></span>
-          </div>
+        <router-link to="/promotions" class="nav-item" :class="$route.path === '/promotions' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 12v8H4v-8l8-8 8 8zm-2 2H6v4h12v-4zM12 2l-8 8h16l-8-8z"/></svg>
           <span class="text-[10px] font-semibold">Promos</span>
         </router-link>
-        <router-link to="/agent" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200 pointer-events-auto" :class="$route.path === '/agent' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
-          <div class="relative">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-            <span v-if="$route.path === '/agent'" class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full"></span>
-          </div>
+        <router-link to="/agent" class="nav-item" :class="$route.path === '/agent' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
           <span class="text-[10px] font-semibold">Agents</span>
         </router-link>
-        <router-link to="/service" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200 pointer-events-auto" :class="$route.path === '/service' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
-          <div class="relative">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-            <span v-if="$route.path === '/service'" class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full"></span>
-          </div>
+        <router-link to="/service" class="nav-item" :class="$route.path === '/service' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
           <span class="text-[10px] font-semibold">Chat</span>
         </router-link>
-        <router-link to="/account" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200 pointer-events-auto" :class="$route.path === '/account' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
-          <div class="relative">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
-            <span v-if="$route.path === '/account'" class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full"></span>
-          </div>
+        <router-link to="/account" class="nav-item" :class="$route.path === '/account' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
           <span class="text-[10px] font-semibold">You</span>
         </router-link>
       </div>
     </nav>
 
-    <!-- ===== AUTH MODAL (Luxury Login / Register Tabs) ===== -->
+    <!-- ===== AUTH MODAL (Redesigned Luxury) ===== -->
     <Teleport to="body">
       <Transition name="modal">
         <div v-if="showAuthModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md" @click.self="showAuthModal = false">
-          <div class="bg-[#0a0a0a] border border-yellow-600/40 rounded-3xl w-full max-w-sm p-6 shadow-2xl shadow-yellow-500/10 animate-slide-up max-h-[90vh] overflow-y-auto">
+          <div class="bg-[#0a0a0a] border border-yellow-600/30 rounded-3xl w-full max-w-xs p-5 shadow-2xl shadow-yellow-500/10 animate-slide-up">
+            <!-- Brand inside modal -->
+            <div class="text-center mb-6">
+              <h2 class="text-2xl font-black bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent">NovaBETT</h2>
+              <p class="text-[10px] text-gray-500 mt-1">Premium Online Casino</p>
+            </div>
+
             <!-- Tabs -->
-            <div class="flex mb-8">
-              <button @click="authTab = 'login'" class="flex-1 py-2.5 rounded-l-full text-sm font-bold transition-all duration-300"
-                :class="authTab === 'login' ? 'bg-gradient-to-r from-yellow-500 to-amber-600 text-black shadow-lg shadow-yellow-500/30' : 'bg-white/5 text-gray-400 hover:bg-white/10'">
+            <div class="flex mb-6">
+              <button @click="authTab = 'login'"
+                class="flex-1 py-2 rounded-l-full text-xs font-bold transition-all duration-300"
+                :class="authTab === 'login' ? 'bg-gradient-to-r from-yellow-500 to-amber-600 text-black shadow-lg' : 'bg-white/5 text-gray-400'">
                 Login
               </button>
-              <button @click="authTab = 'register'" class="flex-1 py-2.5 rounded-r-full text-sm font-bold transition-all duration-300"
-                :class="authTab === 'register' ? 'bg-gradient-to-r from-yellow-500 to-amber-600 text-black shadow-lg shadow-yellow-500/30' : 'bg-white/5 text-gray-400 hover:bg-white/10'">
+              <button @click="authTab = 'register'"
+                class="flex-1 py-2 rounded-r-full text-xs font-bold transition-all duration-300"
+                :class="authTab === 'register' ? 'bg-gradient-to-r from-yellow-500 to-amber-600 text-black shadow-lg' : 'bg-white/5 text-gray-400'">
                 Register
               </button>
             </div>
 
             <!-- Login Form -->
-            <div v-if="authTab === 'login'" class="space-y-5">
+            <div v-if="authTab === 'login'" class="space-y-4">
               <div>
-                <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Username</label>
-                <input v-model="loginUsername" type="text" class="w-full p-3 rounded-xl bg-[#1a1a1a] border border-gray-700 text-white placeholder-transparent focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500/50 transition-all text-sm" @input="loginUsername = loginUsername.toUpperCase()" />
+                <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Username</label>
+                <input v-model="loginUsername" type="text"
+                  class="w-full p-2.5 rounded-lg bg-[#1a1a1a] border text-white text-sm focus:outline-none focus:border-yellow-500 transition-colors"
+                  :class="loginUsernameValid ? 'border-green-500' : 'border-gray-700'"
+                  @input="loginUsername = loginUsername.toUpperCase()" />
+                <p v-if="loginUsername && !loginUsernameValid" class="text-red-400 text-[10px] mt-1">Username required</p>
               </div>
               <div>
-                <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Password</label>
-                <input v-model="loginPassword" type="password" class="w-full p-3 rounded-xl bg-[#1a1a1a] border border-gray-700 text-white placeholder-transparent focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500/50 transition-all text-sm" />
+                <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Password</label>
+                <input v-model="loginPassword" type="password"
+                  class="w-full p-2.5 rounded-lg bg-[#1a1a1a] border text-white text-sm focus:outline-none focus:border-yellow-500 transition-colors"
+                  :class="loginPasswordValid ? 'border-green-500' : 'border-gray-700'" />
+                <p v-if="loginPassword && !loginPasswordValid" class="text-red-400 text-[10px] mt-1">Password required</p>
               </div>
-              <button @click="doLogin" :disabled="loginLoading" class="w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-bold py-3 rounded-xl shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                {{ loginLoading ? 'Signing In...' : 'Sign In' }}
+              <button @click="doLogin" :disabled="loginLoading || !loginUsernameValid || !loginPasswordValid"
+                class="w-full btn-primary py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                <span v-if="loginLoading" class="flex items-center justify-center gap-2">
+                  <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                  Signing In...
+                </span>
+                <span v-else>Sign In</span>
               </button>
-              <p class="text-red-400 text-sm text-center">{{ loginError }}</p>
             </div>
 
-            <!-- Register Form (Luxury Premium) -->
-            <div v-else class="space-y-5">
+            <!-- Register Form -->
+            <div v-else class="space-y-4">
               <div>
-                <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Username</label>
-                <input v-model="regUsername" type="text" class="w-full p-3 rounded-xl bg-[#1a1a1a] border border-gray-700 text-white placeholder-transparent focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500/50 transition-all text-sm" @input="regUsername = regUsername.toUpperCase()" />
-                <p class="text-[10px] text-gray-500 mt-1 ml-1">e.g. MOEMOE</p>
+                <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Username</label>
+                <input v-model="regUsername" type="text"
+                  class="w-full p-2.5 rounded-lg bg-[#1a1a1a] border text-white text-sm focus:outline-none focus:border-yellow-500 transition-colors"
+                  :class="regUsernameValid ? 'border-green-500' : 'border-gray-700'"
+                  @input="regUsername = regUsername.toUpperCase()" />
+                <p class="text-[10px] text-gray-500 mt-1">e.g. MOEMOE</p>
               </div>
               <div>
-                <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Password</label>
-                <input v-model="regPassword" type="password" class="w-full p-3 rounded-xl bg-[#1a1a1a] border border-gray-700 text-white placeholder-transparent focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500/50 transition-all text-sm" />
-                <p class="text-[10px] text-gray-500 mt-1 ml-1">e.g. moe#223</p>
+                <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Password</label>
+                <input v-model="regPassword" type="password"
+                  class="w-full p-2.5 rounded-lg bg-[#1a1a1a] border text-white text-sm focus:outline-none focus:border-yellow-500 transition-colors"
+                  :class="regPasswordValid ? 'border-green-500' : 'border-gray-700'" />
+                <p class="text-[10px] text-gray-500 mt-1">e.g. moe#223</p>
               </div>
               <div>
-                <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Phone Number</label>
-                <input v-model="regPhone" type="tel" class="w-full p-3 rounded-xl bg-[#1a1a1a] border border-gray-700 text-white placeholder-transparent focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500/50 transition-all text-sm" />
-                <p class="text-[10px] text-gray-500 mt-1 ml-1">e.g. 09123456789 or 9123456789</p>
+                <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Phone Number</label>
+                <input v-model="regPhone" type="tel"
+                  class="w-full p-2.5 rounded-lg bg-[#1a1a1a] border text-white text-sm focus:outline-none focus:border-yellow-500 transition-colors"
+                  :class="regPhoneValid ? 'border-green-500' : 'border-gray-700'" />
+                <p class="text-[10px] text-gray-500 mt-1">e.g. 09123456789</p>
               </div>
-              <button @click="doRegister" :disabled="regLoading" class="w-full bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-bold py-3 rounded-xl shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                {{ regLoading ? 'Creating Account...' : 'Join NovaBETT' }}
+              <button @click="doRegister" :disabled="regLoading || !regUsernameValid || !regPasswordValid || !regPhoneValid"
+                class="w-full btn-primary py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                <span v-if="regLoading" class="flex items-center justify-center gap-2">
+                  <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                  Creating...
+                </span>
+                <span v-else>Join NovaBETT</span>
               </button>
-              <p class="text-red-400 text-sm text-center">{{ regError }}</p>
             </div>
 
-            <button @click="showAuthModal = false" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+            <button @click="showAuthModal = false" class="absolute top-3 right-3 text-gray-500 hover:text-white transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
           </div>
         </div>
       </Transition>
     </Teleport>
 
-    <!-- Footer Modals (team, terms, 18+) -->
+    <!-- Footer Modals -->
     <Teleport to="body">
       <Transition name="modal">
         <div v-if="footerModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" @click.self="footerModal = null">
-          <div class="bg-[#141428] border border-white/10 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-slide-up max-h-[80vh] overflow-y-auto">
+          <div class="bg-[#141428] border border-white/10 rounded-3xl w-full  max-w-sm p-6 shadow-2xl animate-slide-up max-h-[80vh] overflow-y-auto">
             <h2 class="text-xl font-bold text-white text-center mb-4">{{ footerModalTitle }}</h2>
             <p class="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{{ footerModalContent }}</p>
             <button @click="footerModal = null" class="mt-6 w-full bg-white hover:bg-gray-200 text-black font-bold py-3 rounded-2xl shadow transition-all">Close</button>
@@ -271,7 +325,7 @@ const username = ref('')
 const mainBalance = ref(0)
 const balanceLoading = ref(false)
 
-// Avatar random colors
+// Avatar colors
 const avatarColors = [
   'linear-gradient(135deg, #f6d365, #fda085)',
   'linear-gradient(135deg, #a1c4fd, #c2e9fb)',
@@ -283,14 +337,23 @@ const avatarColor = ref(avatarColors[0])
 
 // Auth modal
 const showAuthModal = ref(false)
-const authTab = ref('login') // 'login' or 'register'
+const authTab = ref('login')
+
+// Toast system
+const toasts = ref([])
+let toastId = 0
+const addToast = (message, type = 'success') => {
+  const id = ++toastId
+  toasts.value.push({ id, message, type })
+  setTimeout(() => {
+    toasts.value = toasts.value.filter(t => t.id !== id)
+  }, 3000)
+}
 
 onMounted(async () => {
-  // Check if we should open auth modal from router redirect
   if (route.query.auth === 'login') {
     showAuthModal.value = true
     authTab.value = 'login'
-    // Remove query param without reload
     window.history.replaceState({}, document.title, window.location.pathname)
   }
   const { data: { session } } = await supabase.auth.getSession()
@@ -323,30 +386,38 @@ async function fetchBalance() {
   } catch (e) { console.error(e) } finally { balanceLoading.value = false }
 }
 
-// Login logic
+// Form validation helpers
+const loginUsernameValid = computed(() => loginUsername.value.trim().length > 0)
+const loginPasswordValid = computed(() => loginPassword.value.length > 0)
+const regUsernameValid = computed(() => regUsername.value.trim().length > 0)
+const regPasswordValid = computed(() => regPassword.value.length >= 3) // minimal
+const regPhoneValid = computed(() => regPhone.value.trim().length >= 6)
+
+// Login
 const loginUsername = ref('')
 const loginPassword = ref('')
 const loginLoading = ref(false)
 const loginError = ref('')
 async function doLogin() {
   loginError.value = ''
-  if (!loginUsername.value || !loginPassword.value) { loginError.value = 'Fill all fields'; return }
+  if (!loginUsernameValid.value || !loginPasswordValid.value) return
   loginLoading.value = true
   try {
     const email = `${loginUsername.value.toUpperCase()}@novabett.internal`
     const { data, error } = await supabase.auth.signInWithPassword({ email, password: loginPassword.value })
     if (error) throw error
-    // Store token
-    if (data.session?.access_token) {
-      localStorage.setItem('sb_token', data.session.access_token)
-    }
+    if (data.session?.access_token) localStorage.setItem('sb_token', data.session.access_token)
     await loadUserInfo()
+    addToast('Successfully logged in', 'success')
     showAuthModal.value = false
     loginUsername.value = ''; loginPassword.value = ''
-  } catch (e) { loginError.value = e.message } finally { loginLoading.value = false }
+  } catch (e) {
+    loginError.value = e.message
+    addToast(e.message, 'error')
+  } finally { loginLoading.value = false }
 }
 
-// Register logic
+// Register
 const regUsername = ref('')
 const regPhone = ref('')
 const regPassword = ref('')
@@ -354,7 +425,7 @@ const regLoading = ref(false)
 const regError = ref('')
 async function doRegister() {
   regError.value = ''
-  if (!regUsername.value || !regPhone.value || !regPassword.value) { regError.value = 'Fill all fields'; return }
+  if (!regUsernameValid.value || !regPasswordValid.value || !regPhoneValid.value) return
   regLoading.value = true
   try {
     const res = await fetch('https://vuywhhmwrqykukcemifd.supabase.co/functions/v1/register3', {
@@ -367,16 +438,18 @@ async function doRegister() {
     const email = `${regUsername.value.toUpperCase()}@novabett.internal`
     const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({ email, password: regPassword.value })
     if (loginError) throw loginError
-    if (loginData.session?.access_token) {
-      localStorage.setItem('sb_token', loginData.session.access_token)
-    }
+    if (loginData.session?.access_token) localStorage.setItem('sb_token', loginData.session.access_token)
     await loadUserInfo()
+    addToast('Account created successfully!', 'success')
     showAuthModal.value = false
     regUsername.value = ''; regPhone.value = ''; regPassword.value = ''
-  } catch (e) { regError.value = e.message } finally { regLoading.value = false }
+  } catch (e) {
+    regError.value = e.message
+    addToast(e.message, 'error')
+  } finally { regLoading.value = false }
 }
 
-// Jackpot logic (unused but kept)
+// Jackpot (unused but kept)
 const jackpot = ref(893619157998)
 const displayedJackpot = ref('893,619,157,998')
 const formatNumber = (num) => new Intl.NumberFormat('en-US').format(num)
@@ -420,7 +493,7 @@ const searchVisible = ref(false)
 const searchQuery = ref('')
 const toggleSearch = () => { searchVisible.value = !searchVisible.value }
 
-// Categories & Games
+// Categories
 const categories = ref([
   { name: 'All', logo: null },
   { name: 'JILI', logo: '/images/providers/jili.png' },
@@ -431,6 +504,8 @@ const categories = ref([
   { name: 'Fishing', logo: null }
 ])
 const activeCategory = ref('All')
+
+// Games (32 dummy)
 const games = ref([
   { id: 1, name: 'Jackpot Fishing', provider: 'JILI', category: 'Fishing' },
   { id: 2, name: 'Gates of Olympus', provider: 'Pragmatic', category: 'Slot' },
@@ -443,8 +518,29 @@ const games = ref([
   { id: 9, name: 'Dragon Fortune', provider: 'JILI', category: 'Slot' },
   { id: 10, name: 'Golden Empire', provider: 'Pragmatic', category: 'Slot' },
   { id: 11, name: 'Super Ace', provider: 'PG', category: 'Slot' },
-  { id: 12, name: 'Crazy777', provider: 'JILI', category: 'Slot' }
+  { id: 12, name: 'Crazy777', provider: 'JILI', category: 'Slot' },
+  { id: 13, name: 'Wild Bandito', provider: 'Pragmatic', category: 'Slot' },
+  { id: 14, name: 'Lucky Neko', provider: 'PG', category: 'Slot' },
+  { id: 15, name: 'Phoenix Rises', provider: 'PP', category: 'Slot' },
+  { id: 16, name: 'Leprechaun Song', provider: 'Pragmatic', category: 'Slot' },
+  { id: 17, name: 'Egyptian Dreams', provider: 'JILI', category: 'Slot' },
+  { id: 18, name: 'Bikini Paradise', provider: 'PG', category: 'Slot' },
+  { id: 19, name: 'Great Rhino', provider: 'Pragmatic', category: 'Slot' },
+  { id: 20, name: 'Fortune Gods', provider: 'PP', category: 'Slot' },
+  { id: 21, name: 'Mystical Spirits', provider: 'JILI', category: 'Slot' },
+  { id: 22, name: 'Caishen Wins', provider: 'PG', category: 'Slot' },
+  { id: 23, name: 'Hot to Burn', provider: 'Pragmatic', category: 'Slot' },
+  { id: 24, name: 'Treasure Wild', provider: 'PP', category: 'Slot' },
+  { id: 25, name: 'Dragon Hatch', provider: 'PG', category: 'Slot' },
+  { id: 26, name: 'Aladdin’s Wish', provider: 'JILI', category: 'Slot' },
+  { id: 27, name: 'Magic Journey', provider: 'Pragmatic', category: 'Slot' },
+  { id: 28, name: 'Chin Shi Huang', provider: 'PG', category: 'Slot' },
+  { id: 29, name: 'Monkey King', provider: 'PP', category: 'Slot' },
+  { id: 30, name: 'Ninja vs Samurai', provider: 'JILI', category: 'Slot' },
+  { id: 31, name: 'The Dog House', provider: 'Pragmatic', category: 'Slot' },
+  { id: 32, name: 'Gold Panther', provider: 'PG', category: 'Slot' }
 ])
+const loadingGames = ref(false) // simulate loading off
 const filteredGames = computed(() => {
   let list = games.value
   if (activeCategory.value !== 'All') list = list.filter(g => g.provider === activeCategory.value || g.category === activeCategory.value)
@@ -456,8 +552,12 @@ const openGame = (game) => alert(`Opening ${game.name}`)
 // Deposit / Withdraw
 const showDepositModal = ref(false)
 const showWithdrawModal = ref(false)
-const handleDepositSubmit = (data) => console.log('Deposit:', data)
-const handleWithdrawSubmit = (data) => console.log('Withdraw:', data)
+const handleDepositSubmit = (data) => {
+  addToast('Deposit request submitted!', 'success')
+}
+const handleWithdrawSubmit = (data) => {
+  addToast('Withdrawal request submitted!', 'success')
+}
 
 // Footer modals
 const footerModal = ref(null)
@@ -490,4 +590,24 @@ const showFooterModal = (type) => { footerModal.value = type }
 .animate-shimmer { background-size: 200% auto; animation: shimmer 3s linear infinite; }
 .animate-fade-in { animation: fadeIn 0.8s ease-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Global Button Classes */
+.btn-primary {
+  @apply relative overflow-hidden bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-bold rounded-full shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200;
+}
+.btn-secondary {
+  @apply bg-white/10 hover:bg-white/20 text-white font-bold rounded-full border border-white/10 active:scale-95 transition-all;
+}
+.btn-tertiary {
+  @apply text-gray-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors;
+}
+
+.nav-item {
+  @apply flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200;
+}
+
+/* Toast animations */
+.toast-enter-active { animation: slideInRight 0.3s ease-out; }
+.toast-leave-active { animation: slideInRight 0.3s ease-in reverse; }
+@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 </style>
