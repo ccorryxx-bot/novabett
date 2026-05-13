@@ -267,6 +267,7 @@ const avatarColors = [
 const avatarColor = ref(avatarColors[0])
 
 onMounted(async () => {
+  showLogin.value = false; showRegister.value = false;
   const { data: { session } } = await supabase.auth.getSession()
   if (session) await loadUserInfo()
   const savedLang = localStorage.getItem('lang')
