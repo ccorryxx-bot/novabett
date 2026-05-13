@@ -276,7 +276,7 @@ onMounted(async () => {
     storedAvatar = Math.floor(Math.random() * avatarColors.length)
     localStorage.setItem('avatarIndex', storedAvatar)
   }
-avatarColor.value = avatarColors[storedAvatar]
+ avatarColor.value = avatarColors[storedAvatar]
 })
 
 async function loadUserInfo() {
