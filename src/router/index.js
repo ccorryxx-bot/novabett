@@ -10,7 +10,7 @@ import AdminDashboard from '@/pages/AdminDashboard.vue'
 
 const routes = [
   { path: '/', redirect: '/home' },
-  { path: '/home', component: HomePage, meta: { requiresAuth: true } },
+  { path: '/home', component: HomePage }, // No auth required
   { path: '/promotions', component: PromotionsPage, meta: { requiresAuth: true } },
   { path: '/agent', component: AgentDashboard, meta: { requiresAuth: true } },
   { path: '/service', component: ServicePage, meta: { requiresAuth: true } },
@@ -20,12 +20,18 @@ const routes = [
   { path: '/admin', component: AdminDashboard }
 ]
 
-const router = createRouter({ history: createWebHistory(), routes })
+const router = createRouter({
+  history: createWebHistory(),
+  routes
+})
 
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('sb_token')
-  if (to.meta.requiresAuth && !token) next('/login')
-  else next()
+  const isAuthenticated = localStorage.getItem('sb_token')
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next('/home') // redirect to home instead of login
+  } else {
+    next()
+  }
 })
 
 export default router
