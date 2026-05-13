@@ -127,7 +127,7 @@
               <div class="p-2 h-5 bg-white/5 rounded mt-1"></div>
             </div>
           </template>
-          <!-- Actual Cards -->
+          <!-- Actual Cards (from Supabase) -->
           <div v-else v-for="game in filteredGames" :key="game.id" @click="openGame(game)"
             class="group bg-[#111] border border-white/5 rounded-2xl overflow-hidden active:scale-95 transition-all duration-200 cursor-pointer hover:border-white/20 hover:shadow-xl">
             <div class="relative w-full aspect-square bg-black/40 flex items-center justify-center overflow-hidden">
@@ -188,12 +188,11 @@
       </div>
     </nav>
 
-    <!-- ===== AUTH MODAL (Redesigned Luxury) ===== -->
+    <!-- ===== AUTH MODAL (Luxury + Validation) ===== -->
     <Teleport to="body">
       <Transition name="modal">
         <div v-if="showAuthModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md" @click.self="showAuthModal = false">
           <div class="bg-[#0a0a0a] border border-yellow-600/30 rounded-3xl w-full max-w-xs p-5 shadow-2xl shadow-yellow-500/10 animate-slide-up">
-            <!-- Brand inside modal -->
             <div class="text-center mb-6">
               <h2 class="text-2xl font-black bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent">NovaBETT</h2>
               <p class="text-[10px] text-gray-500 mt-1">Premium Online Casino</p>
@@ -286,7 +285,7 @@
     <Teleport to="body">
       <Transition name="modal">
         <div v-if="footerModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" @click.self="footerModal = null">
-          <div class="bg-[#141428] border border-white/10 rounded-3xl w-full  max-w-sm p-6 shadow-2xl animate-slide-up max-h-[80vh] overflow-y-auto">
+          <div class="bg-[#141428] border border-white/10 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-slide-up max-h-[80vh] overflow-y-auto">
             <h2 class="text-xl font-bold text-white text-center mb-4">{{ footerModalTitle }}</h2>
             <p class="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{{ footerModalContent }}</p>
             <button @click="footerModal = null" class="mt-6 w-full bg-white hover:bg-gray-200 text-black font-bold py-3 rounded-2xl shadow transition-all">Close</button>
@@ -325,7 +324,7 @@ const username = ref('')
 const mainBalance = ref(0)
 const balanceLoading = ref(false)
 
-// Avatar colors
+// Avatar random colors
 const avatarColors = [
   'linear-gradient(135deg, #f6d365, #fda085)',
   'linear-gradient(135deg, #a1c4fd, #c2e9fb)',
@@ -351,21 +350,28 @@ const addToast = (message, type = 'success') => {
 }
 
 onMounted(async () => {
+  // Open auth modal if redirected from protected route
   if (route.query.auth === 'login') {
     showAuthModal.value = true
     authTab.value = 'login'
     window.history.replaceState({}, document.title, window.location.pathname)
   }
+  
   const { data: { session } } = await supabase.auth.getSession()
   if (session) await loadUserInfo()
+  
   const savedLang = localStorage.getItem('lang')
   if (savedLang) { locale.value = savedLang; currentLang.value = savedLang }
+  
   let storedAvatar = localStorage.getItem('avatarIndex')
   if (storedAvatar === null) {
     storedAvatar = Math.floor(Math.random() * avatarColors.length)
     localStorage.setItem('avatarIndex', storedAvatar)
   }
   avatarColor.value = avatarColors[storedAvatar]
+  
+  // Fetch games immediately from Supabase
+  fetchGames()
 })
 
 async function loadUserInfo() {
@@ -390,10 +396,10 @@ async function fetchBalance() {
 const loginUsernameValid = computed(() => loginUsername.value.trim().length > 0)
 const loginPasswordValid = computed(() => loginPassword.value.length > 0)
 const regUsernameValid = computed(() => regUsername.value.trim().length > 0)
-const regPasswordValid = computed(() => regPassword.value.length >= 3) // minimal
+const regPasswordValid = computed(() => regPassword.value.length >= 3)
 const regPhoneValid = computed(() => regPhone.value.trim().length >= 6)
 
-// Login
+// Login logic
 const loginUsername = ref('')
 const loginPassword = ref('')
 const loginLoading = ref(false)
@@ -417,7 +423,7 @@ async function doLogin() {
   } finally { loginLoading.value = false }
 }
 
-// Register
+// Register logic
 const regUsername = ref('')
 const regPhone = ref('')
 const regPassword = ref('')
@@ -449,7 +455,24 @@ async function doRegister() {
   } finally { regLoading.value = false }
 }
 
-// Jackpot (unused but kept)
+// Supabase Games Fetch
+const games = ref([])
+const loadingGames = ref(true)
+
+async function fetchGames() {
+  loadingGames.value = true
+  const { data, error } = await supabase
+    .from('games')
+    .select('*')
+    .eq('is_active', true)
+    .order('provider', { ascending: true })
+  if (!error && data) {
+    games.value = data
+  }
+  loadingGames.value = false
+}
+
+// Jackpot (animated counter)
 const jackpot = ref(893619157998)
 const displayedJackpot = ref('893,619,157,998')
 const formatNumber = (num) => new Intl.NumberFormat('en-US').format(num)
@@ -505,48 +528,17 @@ const categories = ref([
 ])
 const activeCategory = ref('All')
 
-// Games (32 dummy)
-const games = ref([
-  { id: 1, name: 'Jackpot Fishing', provider: 'JILI', category: 'Fishing' },
-  { id: 2, name: 'Gates of Olympus', provider: 'Pragmatic', category: 'Slot' },
-  { id: 3, name: 'Mahjong Ways 2', provider: 'PG', category: 'Slot' },
-  { id: 4, name: 'Charge Buffalo', provider: 'JILI', category: 'Slot' },
-  { id: 5, name: 'Money Boxing', provider: 'PP', category: 'Slot' },
-  { id: 6, name: 'Boxing King', provider: 'PG', category: 'Slot' },
-  { id: 7, name: 'Fortune Coins', provider: 'PP', category: 'Slot' },
-  { id: 8, name: 'Fortune Gems 2', provider: 'PG', category: 'Slot' },
-  { id: 9, name: 'Dragon Fortune', provider: 'JILI', category: 'Slot' },
-  { id: 10, name: 'Golden Empire', provider: 'Pragmatic', category: 'Slot' },
-  { id: 11, name: 'Super Ace', provider: 'PG', category: 'Slot' },
-  { id: 12, name: 'Crazy777', provider: 'JILI', category: 'Slot' },
-  { id: 13, name: 'Wild Bandito', provider: 'Pragmatic', category: 'Slot' },
-  { id: 14, name: 'Lucky Neko', provider: 'PG', category: 'Slot' },
-  { id: 15, name: 'Phoenix Rises', provider: 'PP', category: 'Slot' },
-  { id: 16, name: 'Leprechaun Song', provider: 'Pragmatic', category: 'Slot' },
-  { id: 17, name: 'Egyptian Dreams', provider: 'JILI', category: 'Slot' },
-  { id: 18, name: 'Bikini Paradise', provider: 'PG', category: 'Slot' },
-  { id: 19, name: 'Great Rhino', provider: 'Pragmatic', category: 'Slot' },
-  { id: 20, name: 'Fortune Gods', provider: 'PP', category: 'Slot' },
-  { id: 21, name: 'Mystical Spirits', provider: 'JILI', category: 'Slot' },
-  { id: 22, name: 'Caishen Wins', provider: 'PG', category: 'Slot' },
-  { id: 23, name: 'Hot to Burn', provider: 'Pragmatic', category: 'Slot' },
-  { id: 24, name: 'Treasure Wild', provider: 'PP', category: 'Slot' },
-  { id: 25, name: 'Dragon Hatch', provider: 'PG', category: 'Slot' },
-  { id: 26, name: 'Aladdin’s Wish', provider: 'JILI', category: 'Slot' },
-  { id: 27, name: 'Magic Journey', provider: 'Pragmatic', category: 'Slot' },
-  { id: 28, name: 'Chin Shi Huang', provider: 'PG', category: 'Slot' },
-  { id: 29, name: 'Monkey King', provider: 'PP', category: 'Slot' },
-  { id: 30, name: 'Ninja vs Samurai', provider: 'JILI', category: 'Slot' },
-  { id: 31, name: 'The Dog House', provider: 'Pragmatic', category: 'Slot' },
-  { id: 32, name: 'Gold Panther', provider: 'PG', category: 'Slot' }
-])
-const loadingGames = ref(false) // simulate loading off
 const filteredGames = computed(() => {
   let list = games.value
-  if (activeCategory.value !== 'All') list = list.filter(g => g.provider === activeCategory.value || g.category === activeCategory.value)
-  if (searchQuery.value) list = list.filter(g => g.name.toLowerCase().includes(searchQuery.value.toLowerCase()))
+  if (activeCategory.value !== 'All') {
+    list = list.filter(g => g.provider === activeCategory.value || g.category === activeCategory.value)
+  }
+  if (searchQuery.value) {
+    list = list.filter(g => g.name.toLowerCase().includes(searchQuery.value.toLowerCase()))
+  }
   return list
 })
+
 const openGame = (game) => alert(`Opening ${game.name}`)
 
 // Deposit / Withdraw
@@ -597,9 +589,6 @@ const showFooterModal = (type) => { footerModal.value = type }
 }
 .btn-secondary {
   @apply bg-white/10 hover:bg-white/20 text-white font-bold rounded-full border border-white/10 active:scale-95 transition-all;
-}
-.btn-tertiary {
-  @apply text-gray-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors;
 }
 
 .nav-item {
