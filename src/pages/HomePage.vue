@@ -1,176 +1,197 @@
 <template>
   <div class="min-h-screen bg-black text-white flex flex-col selection:bg-yellow-500/30">
-    <div class="flex-1">
-      <div class="px-4 pt-4 pb-2 space-y-4">
-        <!-- Small Jackpot Banner -->
-        <div class="flex items-center justify-between bg-[#111] border border-white/10 rounded-2xl px-5 py-3 shadow-lg shadow-yellow-500/5">
+    <!-- ===== Top Section ===== -->
+    <div class="px-4 pt-6 pb-2 space-y-4 relative z-10">
+      
+      <!-- Welcome Text -->
+      <p class="text-center text-gray-500 text-[11px] font-semibold uppercase tracking-[0.3em] animate-fade-in">
+        Welcome to <span class="text-yellow-400">NovaBETT</span>
+      </p>
+
+      <!-- Brand Name with animated glow -->
+      <div class="text-center">
+        <h1 class="text-4xl font-black tracking-tighter relative inline-block">
+          <span class="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto] drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]">
+            NovaBETT
+          </span>
+          <!-- Animated underline -->
+          <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3/4 h-[3px] bg-gradient-to-r from-transparent via-yellow-400 to-transparent animate-pulse"></div>
+        </h1>
+        <p class="text-[10px] text-gray-600 font-semibold uppercase tracking-wider mt-1">Premium Online Casino</p>
+      </div>
+
+      <!-- Mega Jackpot Banner with professional effect -->
+      <div class="relative overflow-hidden rounded-2xl bg-[#111] border border-white/10 p-5 shadow-2xl">
+        <!-- Animated glow behind -->
+        <div class="absolute inset-0 bg-gradient-to-br from-yellow-500/10 via-transparent to-transparent animate-pulse"></div>
+        <div class="relative z-10 flex items-center justify-between">
           <div>
-            <p class="text-gray-500 text-[10px] font-semibold uppercase tracking-widest">Mega Jackpot</p>
-            <p class="text-2xl font-black text-white tabular-nums tracking-tight">K {{ displayedJackpot }}</p>
+            <p class="text-gray-500 text-[10px] font-semibold uppercase tracking-widest">MEGA JACKPOT</p>
+            <p class="text-3xl font-black text-yellow-200 tabular-nums tracking-tight mt-1">K {{ displayedJackpot }}</p>
           </div>
           <div class="text-right">
             <p class="text-gray-400 text-[11px] font-medium">Dragon Fortune Mega</p>
-            <div class="flex gap-2 mt-1 justify-end">
+            <div class="flex gap-2 mt-2 justify-end">
               <span class="bg-white/10 text-gray-300 text-[9px] font-bold px-2 py-0.5 rounded-full">RTP 96.5%</span>
-              <span class="bg-white/10 text-gray-300 text-[9px] font-bold px-2 py-0.5 rounded-full">VOL HIGH</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Brand Name Row -->
-        <div class="flex items-center justify-between">
-          <div class="flex items-baseline gap-2">
-            <h1 class="text-2xl font-black tracking-tighter text-white">Nova<span class="text-yellow-400">BETT</span></h1>
-            <span class="text-[10px] text-gray-600 font-semibold uppercase tracking-wider hidden sm:inline">Casino</span>
-          </div>
-
-          <!-- Search + Login/Register Buttons (right side) -->
-          <div class="flex items-center gap-4">
-            <button @click="toggleSearch" class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            </button>
-
-            <!-- Show Login/Register when logged out -->
-            <template v-if="!isLoggedIn">
-              <button @click="showLogin = true" class="text-sm font-semibold text-gray-300 hover:text-white transition-colors">Sign In</button>
-              <button @click="showRegister = true" class="bg-white hover:bg-gray-200 text-black text-sm font-bold px-4 py-2 rounded-full transition-all active:scale-95 shadow-sm">Join Now</button>
-            </template>
-          </div>
-        </div>
-
-        <!-- User Account Row (only when logged in) - placed below brand -->
-        <div v-if="isLoggedIn" class="flex items-center justify-between bg-[#111] border border-white/5 rounded-2xl px-4 py-3 shadow-sm">
-          <div class="flex items-center gap-3">
-            <!-- Avatar (random gradient) -->
-            <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-black text-white shadow-lg" :style="{ background: avatarColor }">
-              {{ username.charAt(0).toUpperCase() }}
-            </div>
-            <div>
-              <p class="text-sm font-bold text-white leading-tight">{{ username }}</p>
-              <p class="text-xs text-gray-400 leading-tight">
-                <span v-if="balanceLoading" class="inline-block animate-pulse">...</span>
-                <span v-else class="text-emerald-400 font-semibold">{{ formatCurrency(mainBalance) }} Ks</span>
-              </p>
-            </div>
-          </div>
-          <div class="flex gap-2">
-            <button @click="showDepositModal = true" class="bg-white hover:bg-gray-200 text-black text-xs font-bold px-4 py-2 rounded-full transition-all active:scale-95 shadow-sm">Deposit</button>
-            <button @click="showWithdrawModal = true" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-4 py-2 rounded-full transition-all active:scale-95 border border-white/10">Withdraw</button>
-          </div>
-        </div>
-
-        <!-- Search Bar (togglable) -->
-        <div v-if="searchVisible" class="relative">
-          <input v-model="searchQuery" type="text" placeholder="Search games..." class="w-full pl-10 pr-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-sm" />
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        </div>
-      </div>
-
-      <!-- Language Toggle -->
-      <div class="px-4 pb-2 flex justify-end">
-        <button @click="toggleLanguage" class="text-xs bg-white/5 hover:bg-white/10 text-gray-500 px-3 py-1 rounded-full transition-all">{{ currentLang === 'en' ? 'မြန်မာ' : 'English' }}</button>
-      </div>
-
-      <!-- Carousel -->
-      <div class="px-4 pt-2 relative">
-        <div class="rounded-2xl overflow-hidden relative h-36 bg-[#111] border border-white/5 shadow-xl">
-          <div class="absolute inset-0 flex transition-transform duration-500" :style="{ transform: `translateX(-${carouselIndex * 100}%)` }">
-            <div v-for="(img, i) in carouselImages" :key="i" class="w-full h-full flex-shrink-0 flex items-center justify-center text-xl font-bold text-white/30" :style="{ background: img.color }">
-              <span class="text-white/80 text-lg font-semibold tracking-wider">{{ img.title }}</span>
-            </div>
-          </div>
-          <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-            <button v-for="(img, i) in carouselImages" :key="i" @click="carouselIndex = i" class="w-2 h-2 rounded-full transition-all" :class="i === carouselIndex ? 'bg-white w-4' : 'bg-white/30'"></button>
-          </div>
-          <button @click="prevSlide" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-1.5 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
-          <button @click="nextSlide" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-1.5 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
-        </div>
-      </div>
-
-      <!-- Categories -->
-      <div class="px-4 pt-5 pb-4">
-        <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Game Categories</h2>
-        <div class="flex gap-2 overflow-x-auto no-scrollbar">
-          <button v-for="cat in categories" :key="cat" @click="activeCategory = cat" class="px-4 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap border" :class="activeCategory === cat ? 'bg-white text-black border-transparent shadow-sm' : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'">{{ cat }}</button>
-        </div>
-      </div>
-
-      <!-- Game Cards -->
-      <div class="px-4">
-        <div class="grid grid-cols-3 gap-3">
-          <div v-for="game in filteredGames" :key="game.id" @click="openGame(game)" class="group bg-[#111] border border-white/5 rounded-2xl overflow-hidden active:scale-95 transition-all duration-200 cursor-pointer hover:border-white/20 hover:shadow-xl">
-            <div class="relative w-full aspect-square bg-black/40 flex items-center justify-center overflow-hidden">
-              <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"></div>
-              <span class="absolute top-2 left-2 z-20 bg-black/70 backdrop-blur-sm rounded-full px-2 py-0.5 text-[9px] font-bold text-white/80">{{ game.provider }}</span>
-              <span class="text-4xl opacity-20 group-hover:scale-110 transition-transform duration-500">🎰</span>
-            </div>
-            <div class="p-2">
-              <h3 class="text-[12px] font-semibold leading-tight truncate text-gray-300">{{ game.name }}</h3>
+              <span class="bg-white/10 text-gray-300 text-[9px] font-bold px-2 py-0.5 rounded-full">HIGH VOL</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Extra scrolling space -->
-      <div class="h-8"></div>
-      <div class="px-4 text-center text-xs text-gray-600">
-        <p class="py-4">More games coming soon...</p>
-        <div class="h-32 border border-dashed border-white/5 rounded-2xl flex items-center justify-center text-gray-700">Space for future content</div>
+      <!-- User / Login section -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <button @click="toggleSearch" class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </button>
+          <template v-if="!isLoggedIn">
+            <button @click="showLogin = true" class="text-sm font-semibold text-gray-300 hover:text-white transition-colors">Sign In</button>
+            <button @click="showRegister = true" class="bg-white hover:bg-gray-200 text-black text-sm font-bold px-5 py-2 rounded-full transition-all active:scale-95 shadow">Join Now</button>
+          </template>
+        </div>
+        <button @click="toggleLanguage" class="text-xs bg-white/5 hover:bg-white/10 text-gray-400 px-3 py-1 rounded-full transition-all">
+          {{ currentLang === 'en' ? 'မြန်မာ' : 'English' }}
+        </button>
+      </div>
+
+      <!-- User Info Row (if logged in) -->
+      <div v-if="isLoggedIn" class="flex items-center justify-between bg-[#111] border border-white/5 rounded-2xl px-4 py-3 shadow">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-black text-white shadow-lg" :style="{ background: avatarColor }">
+            {{ username.charAt(0).toUpperCase() }}
+          </div>
+          <div>
+            <p class="text-sm font-bold text-white">{{ username }}</p>
+            <p class="text-xs text-gray-400">
+              <span v-if="balanceLoading" class="animate-pulse">...</span>
+              <span v-else class="text-emerald-400 font-semibold">{{ formatCurrency(mainBalance) }} Ks</span>
+            </p>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button @click="showDepositModal = true" class="bg-white hover:bg-gray-200 text-black text-xs font-bold px-4 py-2 rounded-full active:scale-95 transition-all">Deposit</button>
+          <button @click="showWithdrawModal = true" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-4 py-2 rounded-full border border-white/10 active:scale-95 transition-all">Withdraw</button>
+        </div>
+      </div>
+
+      <!-- Search bar (togglable) -->
+      <div v-if="searchVisible" class="relative">
+        <input v-model="searchQuery" type="text" placeholder="Search games..." class="w-full pl-10 pr-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-sm" />
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
       </div>
     </div>
 
-    <!-- Footer -->
-    <div class="px-4 py-8 border-t border-white/5 mt-6">
-      <p class="text-center text-xs text-gray-600">&copy; 2026 NovaBETT. All rights reserved.</p>
-      <div class="flex justify-center gap-6 mt-3">
-        <span class="text-xs text-gray-500 hover:text-gray-300 cursor-pointer transition-colors">Terms of Service</span>
-        <span class="text-xs text-gray-500 hover:text-gray-300 cursor-pointer transition-colors">Privacy Policy</span>
-        <span class="text-xs text-gray-500 hover:text-gray-300 cursor-pointer transition-colors">Contact</span>
+    <!-- ===== Carousel ===== -->
+    <div class="px-4 pt-4">
+      <div class="rounded-2xl overflow-hidden relative h-40 bg-[#111] border border-white/5 shadow-xl">
+        <div class="absolute inset-0 flex transition-transform duration-500" :style="{ transform: `translateX(-${carouselIndex * 100}%)` }">
+          <div v-for="(img, i) in carouselImages" :key="i" class="w-full h-full flex-shrink-0 flex items-center justify-center text-xl font-bold text-white/30" :style="{ background: img.color }">
+            <span class="text-white/80 text-lg font-semibold tracking-wider">{{ img.title }}</span>
+          </div>
+        </div>
+        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+          <button v-for="(img, i) in carouselImages" :key="i" @click="carouselIndex = i" class="w-2 h-2 rounded-full transition-all" :class="i === carouselIndex ? 'bg-white w-4' : 'bg-white/30'"></button>
+        </div>
+        <button @click="prevSlide" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+        <button @click="nextSlide" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
       </div>
     </div>
 
-    <!-- Bottom Nav -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-xl border-t border-white/10 z-40 safe-area-bottom">
+    <!-- ===== Game Categories with Provider Logos ===== -->
+    <div class="px-4 pt-6 pb-3">
+      <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Game Categories</h2>
+      <div class="flex gap-2 overflow-x-auto no-scrollbar">
+        <button v-for="cat in categories" :key="cat.name" @click="activeCategory = cat.name"
+          class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap border"
+          :class="activeCategory === cat.name ? 'bg-white text-black border-transparent shadow' : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'">
+          <!-- Provider Logo (if image exists, else fallback) -->
+          <img v-if="cat.logo" :src="cat.logo" class="w-4 h-4 object-contain rounded-full" alt="" />
+          <span v-else class="text-[10px] font-bold tracking-tight">{{ cat.name.toUpperCase() }}</span>
+          <span>{{ cat.name }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== Game Cards Grid ===== -->
+    <div class="px-4">
+      <div class="grid grid-cols-3 gap-3">
+        <div v-for="game in filteredGames" :key="game.id" @click="openGame(game)"
+          class="group bg-[#111] border border-white/5 rounded-2xl overflow-hidden active:scale-95 transition-all duration-200 cursor-pointer hover:border-white/20 hover:shadow-xl">
+          <div class="relative w-full aspect-square bg-black/40 flex items-center justify-center overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"></div>
+            <span class="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-2 py-0.5 text-[9px] font-bold text-white/80">{{ game.provider }}</span>
+            <span class="text-4xl opacity-20 group-hover:scale-110 transition-transform duration-500">🎰</span>
+          </div>
+          <div class="p-2"><h3 class="text-[11px] font-semibold leading-tight truncate text-gray-300">{{ game.name }}</h3></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Extra Scroll Space & More Games ===== -->
+    <div class="h-6"></div>
+    <div class="px-4 text-center text-xs text-gray-600">
+      <p class="py-4">More games coming soon...</p>
+    </div>
+    <div class="h-8 border-t border-white/5 mx-4"></div>
+
+    <!-- ===== Footer Buttons ===== -->
+    <div class="px-4 pb-24 space-y-3 mt-4">
+      <div class="grid grid-cols-3 gap-3">
+        <button @click="showFooterModal('team')" class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-3 text-center text-xs font-semibold text-gray-400 hover:text-white transition-all">
+          NovaBETT Team
+        </button>
+        <button @click="showFooterModal('terms')" class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-3 text-center text-xs font-semibold text-gray-400 hover:text-white transition-all">
+          Terms of Service
+        </button>
+        <button @click="showFooterModal('plus18')" class="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-3 text-center text-xs font-semibold text-gray-400 hover:text-white transition-all">
+          18+
+        </button>
+      </div>
+      <p class="text-center text-[10px] text-gray-600">&copy; 2026 NovaBETT. All rights reserved.</p>
+    </div>
+
+    <!-- ===== Bottom Navigation ===== -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-xl border-t border-white/10 z-40">
       <div class="flex justify-around items-center py-2 px-1">
         <router-link to="/home" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200" :class="$route.path === '/home' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
-          <div class="relative">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-            <span v-if="$route.path === '/home'" class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full"></span>
-          </div>
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
           <span class="text-[10px] font-semibold">Home</span>
         </router-link>
         <router-link to="/promotions" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200" :class="$route.path === '/promotions' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
-          <div class="relative">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 12v8H4v-8l8-8 8 8zm-2 2H6v4h12v-4zM12 2l-8 8h16l-8-8z"/></svg>
-            <span v-if="$route.path === '/promotions'" class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full"></span>
-          </div>
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 12v8H4v-8l8-8 8 8zm-2 2H6v4h12v-4zM12 2l-8 8h16l-8-8z"/></svg>
           <span class="text-[10px] font-semibold">Promos</span>
         </router-link>
         <router-link to="/agent" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200" :class="$route.path === '/agent' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
-          <div class="relative">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-            <span v-if="$route.path === '/agent'" class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full"></span>
-          </div>
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
           <span class="text-[10px] font-semibold">Agents</span>
         </router-link>
         <router-link to="/service" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200" :class="$route.path === '/service' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
-          <div class="relative">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-            <span v-if="$route.path === '/service'" class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full"></span>
-          </div>
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
           <span class="text-[10px] font-semibold">Chat</span>
         </router-link>
         <router-link to="/account" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200" :class="$route.path === '/account' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
-          <div class="relative">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
-            <span v-if="$route.path === '/account'" class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full"></span>
-          </div>
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
           <span class="text-[10px] font-semibold">You</span>
         </router-link>
       </div>
     </nav>
 
-    <!-- Modals (Login / Register) -->
+    <!-- ===== Footer Modals ===== -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="footerModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" @click.self="footerModal = null">
+          <div class="bg-[#141428] border border-white/10 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-slide-up max-h-[80vh] overflow-y-auto">
+            <h2 class="text-xl font-bold text-white text-center mb-4">{{ footerModalTitle }}</h2>
+            <p class="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{{ footerModalContent }}</p>
+            <button @click="footerModal = null" class="mt-6 w-full bg-white hover:bg-gray-200 text-black font-bold py-3 rounded-2xl shadow transition-all">Close</button>
+            <button @click="footerModal = null" class="absolute top-4 right-4 text-gray-400 hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- Login/Register Modals (same as before) -->
     <Teleport to="body">
       <Transition name="modal">
         <div v-if="showLogin" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" @click.self="showLogin = false">
@@ -179,7 +200,7 @@
             <div class="space-y-4">
               <input v-model="loginUsername" placeholder="Username" class="w-full p-3 rounded-2xl bg-white/5 border border-white/10 text-white uppercase focus:outline-none focus:border-white/30 transition-all text-sm" @input="loginUsername = loginUsername.toUpperCase()" />
               <input v-model="loginPassword" type="password" placeholder="Password" class="w-full p-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-white/30 transition-all text-sm" />
-              <button @click="doLogin" :disabled="loginLoading" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3 rounded-2xl shadow-sm transition-all disabled:opacity-50">{{ loginLoading ? 'Signing In...' : 'Sign In' }}</button>
+              <button @click="doLogin" :disabled="loginLoading" class="w-full bg-white hover:bg-gray-200 text-black font-bold py-3 rounded-2xl shadow transition-all disabled:opacity-50">{{ loginLoading ? 'Signing In...' : 'Sign In' }}</button>
               <p class="text-red-400 text-sm text-center">{{ loginError }}</p>
               <p class="text-gray-400 text-center text-sm">No account? <span @click="showLogin = false; showRegister = true" class="text-white underline cursor-pointer hover:text-gray-200">Create one</span></p>
             </div>
@@ -198,7 +219,7 @@
               <input v-model="regUsername" placeholder="Username" class="w-full p-3 rounded-2xl bg-white/5 border border-white/10 text-white uppercase focus:outline-none focus:border-white/30 transition-all text-sm" @input="regUsername = regUsername.toUpperCase()" />
               <input v-model="regPhone" type="tel" placeholder="Phone (9...)" class="w-full p-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-white/30 transition-all text-sm" />
               <input v-model="regPassword" type="password" placeholder="Password" class="w-full p-3 rounded-2xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-white/30 transition-all text-sm" />
-              <button @click="doRegister" :disabled="regLoading" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-2xl shadow-sm transition-all disabled:opacity-50">{{ regLoading ? 'Creating Account...' : 'Join NovaBETT' }}</button>
+              <button @click="doRegister" :disabled="regLoading" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-2xl shadow transition-all disabled:opacity-50">{{ regLoading ? 'Creating Account...' : 'Join NovaBETT' }}</button>
               <p class="text-red-400 text-sm text-center">{{ regError }}</p>
               <p class="text-gray-400 text-center text-sm">Already have account? <span @click="showRegister = false; showLogin = true" class="text-blue-400 underline cursor-pointer hover:text-blue-300">Sign In</span></p>
             </div>
@@ -208,6 +229,7 @@
       </Transition>
     </Teleport>
 
+    <!-- Deposit/Withdraw Modals -->
     <DepositModal v-model="showDepositModal" @submit="handleDepositSubmit" />
     <WithdrawModal v-model="showWithdrawModal" :balance="mainBalance" @submit="handleWithdrawSubmit" />
   </div>
@@ -234,7 +256,7 @@ const username = ref('')
 const mainBalance = ref(0)
 const balanceLoading = ref(false)
 
-// Avatar colors (5 random gradients)
+// Avatar random colors
 const avatarColors = [
   'linear-gradient(135deg, #f6d365, #fda085)',
   'linear-gradient(135deg, #a1c4fd, #c2e9fb)',
@@ -245,21 +267,16 @@ const avatarColors = [
 const avatarColor = ref(avatarColors[0])
 
 onMounted(async () => {
-  // Check session and load user info
   const { data: { session } } = await supabase.auth.getSession()
-  if (session) {
-    await loadUserInfo()
-  }
-  // Restore language
+  if (session) await loadUserInfo()
   const savedLang = localStorage.getItem('lang')
   if (savedLang) { locale.value = savedLang; currentLang.value = savedLang }
-  // Pick random avatar if not already stored
   let storedAvatar = localStorage.getItem('avatarIndex')
   if (storedAvatar === null) {
     storedAvatar = Math.floor(Math.random() * avatarColors.length)
     localStorage.setItem('avatarIndex', storedAvatar)
   }
-  avatarColor.value = avatarColors[storedAvatar]
+avatarColor.value = avatarColors[storedAvatar]
 })
 
 async function loadUserInfo() {
@@ -279,10 +296,9 @@ async function fetchBalance() {
     mainBalance.value = wallet?.main_balance || 0
   } catch (e) { console.error(e) } finally { balanceLoading.value = false }
 }
-
 async function refreshBalance() { await fetchBalance() }
 
-// Login Modal
+// Login modal
 const showLogin = ref(false)
 const loginUsername = ref('')
 const loginPassword = ref('')
@@ -294,7 +310,7 @@ async function doLogin() {
   loginLoading.value = true
   try {
     const email = `${loginUsername.value.toUpperCase()}@novabett.internal`
-const { error } = await supabase.auth.signInWithPassword({ email, password: loginPassword.value })
+    const { error } = await supabase.auth.signInWithPassword({ email, password: loginPassword.value })
     if (error) throw error
     await loadUserInfo()
     showLogin.value = false
@@ -302,7 +318,7 @@ const { error } = await supabase.auth.signInWithPassword({ email, password: logi
   } catch (e) { loginError.value = e.message } finally { loginLoading.value = false }
 }
 
-// Register Modal
+// Register modal
 const showRegister = ref(false)
 const regUsername = ref('')
 const regPhone = ref('')
@@ -373,9 +389,19 @@ const searchVisible = ref(false)
 const searchQuery = ref('')
 const toggleSearch = () => { searchVisible.value = !searchVisible.value }
 
-// Categories & Games
+// Categories with provider logos (replace with actual image paths later)
+const categories = ref([
+  { name: 'All', logo: null },
+  { name: 'JILI', logo: '/images/providers/jili.png' },   // placeholder – add real images in public/images/providers/
+  { name: 'PP', logo: '/images/providers/pp.png' },
+  { name: 'PG', logo: '/images/providers/pg.png' },
+  { name: 'Pragmatic', logo: '/images/providers/pragmatic.png' },
+  { name: 'Live', logo: null },
+  { name: 'Fishing', logo: null }
+])
 const activeCategory = ref('All')
-const categories = ref(['All', 'JILI', 'PP', 'PG', 'Pragmatic', 'Live', 'Fishing'])
+
+// Games (replace with real data from Supabase later)
 const games = ref([
   { id: 1, name: 'Jackpot Fishing', provider: 'JILI', category: 'Fishing' },
   { id: 2, name: 'Gates of Olympus', provider: 'Pragmatic', category: 'Slot' },
@@ -403,6 +429,26 @@ const showDepositModal = ref(false)
 const showWithdrawModal = ref(false)
 const handleDepositSubmit = (data) => console.log('Deposit:', data)
 const handleWithdrawSubmit = (data) => console.log('Withdraw:', data)
+
+// Footer modals
+const footerModal = ref(null) // 'team', 'terms', 'plus18'
+const footerModalTitle = computed(() => {
+  switch (footerModal.value) {
+    case 'team': return 'NovaBETT Team'
+    case 'terms': return 'Terms of Service'
+    case 'plus18': return '18+ Responsible Gaming'
+    default: return ''
+  }
+})
+const footerModalContent = computed(() => {
+  switch (footerModal.value) {
+    case 'team': return 'We are a passionate team of developers and designers...'
+    case 'terms': return 'Please read our terms of service carefully...'
+    case 'plus18': return 'You must be 18 years or older to play. Play responsibly.'
+    default: return ''
+  }
+})
+const showFooterModal = (type) => { footerModal.value = type }
 </script>
 
 <style scoped>
@@ -411,4 +457,8 @@ const handleWithdrawSubmit = (data) => console.log('Withdraw:', data)
 .modal-enter-active { animation: slideUp 0.3s ease-out; }
 .modal-leave-active { animation: slideUp 0.2s ease-in reverse; }
 @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes shimmer { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
+.animate-shimmer { background-size: 200% auto; animation: shimmer 3s linear infinite; }
+.animate-fade-in { animation: fadeIn 0.8s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 </style>
