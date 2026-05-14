@@ -11,27 +11,49 @@
           <h3 class="font-bold text-cyan-300">🎡 Lucky Wheel</h3>
           <span class="bg-cyan-500/10 text-cyan-300 px-3 py-1 rounded-full text-sm">{{ spinsLeft }} Spins</span>
         </div>
-        <div class="flex justify-center">
-          <div class="relative w-48 h-48">
-            <!-- Wheel -->
-            <div class="w-full h-full rounded-full border-4 border-cyan-500/30 bg-gradient-to-br from-cyan-500 via-teal-600 to-blue-800 shadow-2xl relative overflow-hidden transform transition-transform duration-1000" :class="{ 'rotate-[720deg]': spinning }">
-              <span class="absolute top-5 right-5 text-white font-bold text-sm drop-shadow-lg">30K</span>
-              <span class="absolute bottom-5 right-5 text-white font-bold text-sm drop-shadow-lg">50K</span>
-              <span class="absolute bottom-5 left-5 text-white font-bold text-sm drop-shadow-lg">70K</span>
-              <span class="absolute top-5 left-5 text-white font-bold text-sm drop-shadow-lg">100K</span>
+
+        <!-- Wheel Container -->
+        <div class="flex justify-center my-6">
+          <div class="relative w-56 h-56">
+            <!-- Outer glow ring -->
+            <div class="absolute -inset-2 bg-gradient-to-r from-cyan-500 via-teal-500 to-cyan-500 rounded-full blur-md opacity-50 animate-pulse"></div>
+            
+            <!-- Wheel itself (6 segments) -->
+            <div ref="wheelEl" class="w-full h-full rounded-full bg-transparent border-4 border-cyan-500/50 shadow-2xl relative flex items-center justify-center transition-transform duration-[2000ms] ease-out overflow-hidden"
+              :style="{ transform: `rotate(${wheelRotation}deg)` }">
+              
+              <!-- Segment 1: 30K (top-right area) -->
+              <div class="absolute inset-0" style="background: conic-gradient(from 0deg, #00bcd4 0deg 60deg, #00838f 60deg 120deg, #00bcd4 120deg 180deg, #006064 180deg 240deg, #00bcd4 240deg 300deg, #00838f 300deg 360deg);"></div>
+              
+              <!-- Labels positioned at center of each segment -->
+              <span class="absolute text-white font-bold text-xs drop-shadow-lg" style="top:15%; right:20%; transform: rotate(30deg);">30K</span>
+              <span class="absolute text-white font-bold text-xs drop-shadow-lg" style="bottom:15%; right:20%; transform: rotate(-30deg);">50K</span>
+              <span class="absolute text-white font-bold text-xs drop-shadow-lg" style="bottom:15%; left:20%; transform: rotate(30deg);">70K</span>
+              <span class="absolute text-white font-bold text-xs drop-shadow-lg" style="top:15%; left:20%; transform: rotate(-30deg);">100K</span>
+              <!-- Empty segments (top-left and bottom-right) -->
+              <span class="absolute text-gray-400 font-bold text-[10px]" style="top:30%; right:8%; transform: rotate(60deg);">Empty</span>
+              <span class="absolute text-gray-400 font-bold text-[10px]" style="bottom:30%; left:8%; transform: rotate(-60deg);">Empty</span>
             </div>
-            <!-- Pointer -->
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 w-0 h-0 border-l-8 border-r-8 border-t-[16px] border-l-transparent border-r-transparent border-t-cyan-300 drop-shadow-lg z-10"></div>
-            <!-- Center Button -->
-            <button @click="spinWheel" :disabled="spinning || spinsLeft <= 0" class="absolute inset-0 flex items-center justify-center z-20">
-              <span class="text-3xl bg-black/50 rounded-full p-2">🎡</span>
+            
+            <!-- Pointer triangle (fixed) -->
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-0 h-0 border-l-8 border-r-8 border-t-[16px] border-l-transparent border-r-transparent border-t-cyan-300 drop-shadow-lg z-10"></div>
+            
+            <!-- Spin button (center) -->
+            <button @click="spinWheel" :disabled="spinning || spinsLeft <= 0" class="absolute inset-0 z-20 flex items-center justify-center">
+              <span class="text-3xl bg-black/50 rounded-full p-3">🎡</span>
             </button>
           </div>
         </div>
+
+        <!-- Win message -->
         <div v-if="lastWin" class="text-center mt-3 animate-bounce">
-          <p class="text-cyan-400 font-bold">🏆 You won {{ lastWin.toLocaleString() }} Ks!</p>
+          <p class="text-cyan-400 font-bold text-lg">🏆 You won {{ lastWin.toLocaleString() }} Ks!</p>
+          <p class="text-gray-400 text-xs">Wagering x10 required</p>
         </div>
-        <div class="mt-3 text-center text-xs text-gray-500">💰 Deposit to earn more spins</div>
+
+        <div class="mt-4 text-center text-xs text-gray-500">
+          💰 ငွေသွင်းတိုင်း Spin ထပ်ရမည်
+        </div>
       </div>
 
       <!-- Referral Code -->
@@ -62,6 +84,7 @@
         </div>
         <p v-else class="text-center text-gray-500 py-4">No active bonuses</p>
       </div>
+
     </div>
 
     <!-- Bottom Nav -->
@@ -80,7 +103,6 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-// ... (script logic remains the same as before)
 const storedUsername = localStorage.getItem('sb_username') || 'YOURNAME'
 const referralCode = computed(() => storedUsername.toUpperCase())
 
@@ -94,21 +116,54 @@ const copyReferral = () => {
   }
 }
 
+// Lucky Wheel
 const spinsLeft = ref(5)
 const spinning = ref(false)
 const lastWin = ref(null)
-const prizes = [30000, 50000, 70000, 100000]
+const wheelRotation = ref(0)
+
+// Prizes mapping for 6 segments (0 to 5)
+// Segment index: 0 = 30K, 1 = 50K, 2 = 70K, 3 = 100K, 4 = Empty, 5 = Empty
+const prizes = [30000, 50000, 70000, 100000, 0, 0] // 0 means empty
 
 const spinWheel = () => {
   if (spinning.value || spinsLeft.value <= 0) return
   spinning.value = true
   spinsLeft.value--
+
+  // Random win index (0-5)
+  const winIndex = Math.floor(Math.random() * 6)
+  
+  // Calculate rotation to land on that segment
+  // Each segment is 60 degrees. Segment 0 starts at -30 degrees? Let's make segment 0 at top (pointer points to top).
+  // With conic-gradient we defined from 0deg, so segment 0 is from 0 to 60deg (right side? Actually conic from 0deg starts at 3 o'clock, but we'll just make the pointer at top and map accordingly.
+  // Simpler: we'll rotate wheel so that the winning segment aligns with the pointer (top).
+  // If we want segment 0 (30K) at top when rotation = 0, we need to rotate wheel so that its label appears at top.
+  // We can just compute a target angle that brings segment `winIndex` to the top. Since we have 6 segments, each 60deg.
+  // Segment 0's center is at 30deg from the start? We'll just use a base offset.
+  // We'll calculate final rotation = currentRotation + 5 full spins + (targetAngle - currentMod + 360) % 360
+  const segmentCenter = 30 + winIndex * 60 // center angle of segment (from 0deg line, clockwise)
+  const currentMod = wheelRotation.value % 360
+  let delta = segmentCenter - currentMod
+  if (delta < 0) delta += 360
+  // Add 5 full rotations for dramatic effect
+  const finalRotation = wheelRotation.value + 360 * 5 + delta
+  wheelRotation.value = finalRotation
+
+  // After animation, set win
   setTimeout(() => {
-    lastWin.value = prizes[Math.floor(Math.random() * prizes.length)]
+    const prize = prizes[winIndex]
+    if (prize > 0) {
+      lastWin.value = prize
+    } else {
+      lastWin.value = null
+      // Optionally show "No luck" message
+    }
     spinning.value = false
-  }, 1000)
+  }, 2000)
 }
 
+// Mock bonuses
 const activeBonuses = ref([
   { id: 1, name: 'First Deposit Bonus', desc: '70% match bonus', amount: 1400 },
   { id: 2, name: 'Lucky Wheel Win', desc: 'Wagering x10', amount: 50000 }
