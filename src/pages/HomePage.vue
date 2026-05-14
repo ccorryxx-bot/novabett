@@ -1,15 +1,15 @@
 <template>
-  <div class="min-h-screen bg-black text-white flex flex-col selection:bg-yellow-500/30">
+  <div class="min-h-screen bg-[#0b141a] text-gray-200 flex flex-col selection:bg-cyan-500/30">
     <!-- Toast Container -->
     <Teleport to="body">
       <div class="fixed top-4 right-4 z-[100] space-y-2 w-72 pointer-events-none">
         <TransitionGroup name="toast">
           <div v-for="toast in toasts" :key="toast.id"
-            class="pointer-events-auto p-3 rounded-xl shadow-2xl backdrop-blur-md flex items-center gap-2 text-sm font-semibold"
+            class="pointer-events-auto p-3 rounded-lg border shadow-lg backdrop-blur-md flex items-center gap-2 text-sm font-semibold"
             :class="{
-              'bg-emerald-500/20 border border-emerald-500/30 text-emerald-400': toast.type === 'success',
-              'bg-red-500/20 border border-red-500/30 text-red-400': toast.type === 'error',
-              'bg-yellow-500/20 border border-yellow-500/30 text-yellow-400': toast.type === 'warning'
+              'bg-teal-500/10 border-teal-500/30 text-teal-300': toast.type === 'success',
+              'bg-red-500/10 border-red-500/30 text-red-400': toast.type === 'error',
+              'bg-yellow-500/10 border-yellow-500/30 text-yellow-400': toast.type === 'warning'
             }">
             <span v-if="toast.type === 'success'">✓</span>
             <span v-else-if="toast.type === 'error'">✕</span>
@@ -23,79 +23,78 @@
     <div class="flex-1">
       <div class="px-4 pt-6 pb-2 space-y-4 relative z-10">
         <!-- Welcome Text -->
-        <p class="text-center text-gray-500 text-[11px] font-semibold uppercase tracking-[0.3em] animate-fade-in">
-          Welcome to <span class="text-yellow-400">NovaBETT</span>
+        <p class="text-center text-cyan-500/80 text-[11px] font-semibold uppercase tracking-[0.3em] animate-fade-in">
+          Welcome to <span class="text-cyan-400">NovaBETT</span>
         </p>
 
         <!-- Brand Name -->
         <div class="text-center">
           <h1 class="text-4xl font-black tracking-tighter relative inline-block">
-            <span class="bg-gradient-to-r from-yellow-300 via-amber-400 to-yellow-300 bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto] drop-shadow-[0_0_15px_rgba(251,191,36,0.5)]">
+            <span class="bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto] drop-shadow-[0_0_15px_rgba(0,188,212,0.5)]">
               NovaBETT
             </span>
-            <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3/4 h-[3px] bg-gradient-to-r from-transparent via-yellow-400 to-transparent animate-pulse"></div>
+            <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3/4 h-[3px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-pulse"></div>
           </h1>
-          <p class="text-[10px] text-gray-600 font-semibold uppercase tracking-wider mt-1">Premium Online Casino</p>
+          <p class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider mt-1">Premium Online Casino</p>
         </div>
 
         <!-- Top row: Search + Login/User info -->
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <button @click="toggleSearch" class="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10">
+            <button @click="toggleSearch" class="text-gray-400 hover:text-cyan-400 transition-colors p-2 rounded-full hover:bg-cyan-500/10">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </button>
             <template v-if="!isLoggedIn">
               <button @click="showAuthModal = true; authTab = 'login'"
-                class="relative overflow-hidden bg-gradient-to-r from-yellow-500 to-amber-600 text-black text-sm font-bold px-5 py-2.5 rounded-full shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200">
+                class="relative overflow-hidden bg-gradient-to-r from-cyan-500 to-teal-600 text-white text-sm font-bold px-5 py-2.5 rounded-full shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200">
                 <span class="relative z-10">Login</span>
-                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-700"></div>
               </button>
             </template>
           </div>
           <div class="flex items-center gap-2">
-            <button @click="toggleLanguage" class="text-xs bg-white/5 hover:bg-white/10 text-gray-400 px-3 py-1 rounded-full transition-all">
+            <button @click="toggleLanguage" class="text-xs bg-cyan-500/10 hover:bg-cyan-500/20 text-gray-400 px-3 py-1 rounded-full transition-all">
               {{ currentLang === 'en' ? 'မြန်မာ' : 'English' }}
             </button>
           </div>
         </div>
 
         <!-- User Info Row (if logged in) -->
-        <div v-if="isLoggedIn" class="flex items-center justify-between bg-[#111] border border-white/5 rounded-2xl px-4 py-3 shadow">
+        <div v-if="isLoggedIn" class="flex items-center justify-between bg-[#111d26] border border-cyan-500/10 rounded-2xl px-4 py-3 shadow-sm">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-black text-white shadow-lg" :style="{ background: avatarColor }">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-teal-600 flex items-center justify-center text-sm font-black text-white shadow-lg">
               {{ username.charAt(0).toUpperCase() }}
             </div>
             <div>
               <p class="text-sm font-bold text-white">{{ username }}</p>
               <p class="text-xs text-gray-400">
                 <span v-if="balanceLoading" class="animate-pulse">...</span>
-                <span v-else class="text-emerald-400 font-semibold">{{ formatCurrency(mainBalance) }} Ks</span>
+                <span v-else class="text-cyan-400 font-semibold">{{ formatCurrency(mainBalance) }} Ks</span>
               </p>
             </div>
           </div>
           <div class="flex gap-2">
-            <button @click="showDepositModal = true" class="relative overflow-hidden bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-bold rounded-full shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 text-xs py-2 px-4">Deposit</button>
-            <button @click="showWithdrawModal = true" class="bg-white/10 hover:bg-white/20 text-white font-bold rounded-full border border-white/10 active:scale-95 transition-all text-xs py-2 px-4">Withdraw</button>
+            <button @click="showDepositModal = true" class="relative overflow-hidden bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold rounded-full shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 text-xs py-2 px-4">Deposit</button>
+            <button @click="showWithdrawModal = true" class="bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 font-bold rounded-full border border-cyan-500/30 active:scale-95 transition-all text-xs py-2 px-4">Withdraw</button>
           </div>
         </div>
 
         <!-- Search bar -->
         <div v-if="searchVisible" class="relative">
-          <input v-model="searchQuery" type="text" placeholder="Search games..." class="w-full pl-10 pr-4 py-3 rounded-xl bg-[#111] border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-all text-sm" />
+          <input v-model="searchQuery" type="text" placeholder="Search games..." class="w-full pl-10 pr-4 py-3 rounded-xl bg-[#111d26] border border-cyan-500/20 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 transition-all text-sm" />
           <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         </div>
       </div>
 
       <!-- Carousel -->
       <div class="px-4 pt-4">
-        <div class="rounded-2xl overflow-hidden relative h-40 bg-[#111] border border-white/5 shadow-xl">
+        <div class="rounded-2xl overflow-hidden relative h-40 bg-[#111d26] border border-cyan-500/10 shadow-sm">
           <div class="absolute inset-0 flex transition-transform duration-500" :style="{ transform: `translateX(-${carouselIndex * 100}%)` }">
-            <div v-for="(img, i) in carouselImages" :key="i" class="w-full h-full flex-shrink-0 flex items-center justify-center text-xl font-bold text-white/30" :style="{ background: img.color }">
-              <span class="text-white/80 text-lg font-semibold tracking-wider">{{ img.title }}</span>
+            <div v-for="(img, i) in carouselImages" :key="i" class="w-full h-full flex-shrink-0 flex items-center justify-center text-xl font-bold text-cyan-500/20" :style="{ background: img.color }">
+              <span class="text-gray-300 text-lg font-semibold tracking-wider">{{ img.title }}</span>
             </div>
           </div>
           <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-            <button v-for="(img, i) in carouselImages" :key="i" @click="carouselIndex = i" class="w-2 h-2 rounded-full transition-all" :class="i === carouselIndex ? 'bg-white w-4' : 'bg-white/30'"></button>
+            <button v-for="(img, i) in carouselImages" :key="i" @click="carouselIndex = i" class="w-2 h-2 rounded-full transition-all" :class="i === carouselIndex ? 'bg-cyan-400 w-4' : 'bg-gray-600'"></button>
           </div>
           <button @click="prevSlide" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
           <button @click="nextSlide" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
@@ -108,7 +107,7 @@
         <div class="flex gap-2 overflow-x-auto no-scrollbar">
           <button v-for="cat in categories" :key="cat.name" @click="activeCategory = cat.name"
             class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap border"
-            :class="activeCategory === cat.name ? 'bg-white text-black border-transparent shadow' : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'">
+            :class="activeCategory === cat.name ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-sm' : 'bg-cyan-500/5 border-gray-700 text-gray-400 hover:bg-cyan-500/10'">
             <img v-if="cat.logo" :src="cat.logo" class="w-4 h-4 object-contain rounded-full" alt="" />
             <span v-else class="text-[10px] font-bold tracking-tight">{{ cat.name.toUpperCase() }}</span>
             <span>{{ cat.name }}</span>
@@ -116,22 +115,22 @@
         </div>
       </div>
 
-      <!-- Game Cards Grid (with Skeleton Loading) -->
+      <!-- Game Cards Grid -->
       <div class="px-4">
         <div class="grid grid-cols-3 gap-3">
           <!-- Skeleton Loader -->
           <template v-if="loadingGames">
-            <div v-for="n in 9" :key="n" class="rounded-2xl bg-[#111] border border-white/5 overflow-hidden animate-pulse">
-              <div class="aspect-square bg-white/5"></div>
-              <div class="p-2 h-5 bg-white/5 rounded mt-1"></div>
+            <div v-for="n in 9" :key="n" class="rounded-2xl bg-[#111d26] border border-cyan-500/10 overflow-hidden animate-pulse">
+              <div class="aspect-square bg-cyan-500/5"></div>
+              <div class="p-2 h-5 bg-cyan-500/5 rounded mt-1"></div>
             </div>
           </template>
-          <!-- Actual Cards (from Supabase or fallback) -->
+          <!-- Actual Cards -->
           <div v-else v-for="game in filteredGames" :key="game.id" @click="openGame(game)"
-            class="group bg-[#111] border border-white/5 rounded-2xl overflow-hidden active:scale-95 transition-all duration-200 cursor-pointer hover:border-white/20 hover:shadow-xl">
-            <div class="relative w-full aspect-square bg-black/40 flex items-center justify-center overflow-hidden">
-              <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"></div>
-              <span class="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-2 py-0.5 text-[9px] font-bold text-white/80">{{ game.provider }}</span>
+            class="group bg-[#111d26] border border-cyan-500/10 rounded-2xl overflow-hidden active:scale-95 transition-all duration-200 cursor-pointer hover:border-cyan-500/40 hover:shadow-lg hover:shadow-cyan-500/10">
+            <div class="relative w-full aspect-square bg-black/20 flex items-center justify-center overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-teal-500/5"></div>
+              <span class="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-2 py-0.5 text-[9px] font-bold text-cyan-300">{{ game.provider }}</span>
               <span class="text-4xl opacity-20 group-hover:scale-110 transition-transform duration-500">🎰</span>
             </div>
             <div class="p-2"><h3 class="text-[11px] font-semibold leading-tight truncate text-gray-300">{{ game.name }}</h3></div>
@@ -140,7 +139,7 @@
         <!-- Error State -->
         <div v-if="!loadingGames && fetchError" class="text-center py-8">
           <p class="text-red-400 text-sm">{{ fetchError }}</p>
-          <button @click="fetchGames" class="mt-3 bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-4 py-2 rounded-full">Retry</button>
+          <button @click="fetchGames" class="mt-3 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-xs font-bold px-4 py-2 rounded-full">Retry</button>
         </div>
         <!-- Empty State -->
         <div v-if="!loadingGames && !fetchError && filteredGames.length === 0" class="text-center py-8 text-gray-500">
@@ -153,17 +152,17 @@
       <div class="px-4 text-center text-xs text-gray-600">
         <p class="py-4">More games coming soon...</p>
       </div>
-      <div class="h-8 border-t border-white/5 mx-4"></div>
+      <div class="h-8 border-t border-cyan-500/10 mx-4"></div>
 
-      <!-- Footer (stacked vertically) -->
+      <!-- Footer -->
       <div class="px-4 pb-40 space-y-3 mt-4">
-        <button @click="showFooterModal('team')" class="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 text-left text-sm font-semibold text-gray-300 hover:text-white transition-all">
+        <button @click="showFooterModal('team')" class="w-full bg-cyan-500/5 hover:bg-cyan-500/10 border border-cyan-500/10 rounded-xl p-4 text-left text-sm font-semibold text-gray-300 hover:text-cyan-300 transition-all">
           NovaBETT Team
         </button>
-        <button @click="showFooterModal('terms')" class="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 text-left text-sm font-semibold text-gray-300 hover:text-white transition-all">
+        <button @click="showFooterModal('terms')" class="w-full bg-cyan-500/5 hover:bg-cyan-500/10 border border-cyan-500/10 rounded-xl p-4 text-left text-sm font-semibold text-gray-300 hover:text-cyan-300 transition-all">
           Terms of Service
         </button>
-        <button @click="showFooterModal('plus18')" class="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 text-left text-sm font-semibold text-gray-300 hover:text-white transition-all">
+        <button @click="showFooterModal('plus18')" class="w-full bg-cyan-500/5 hover:bg-cyan-500/10 border border-cyan-500/10 rounded-xl p-4 text-left text-sm font-semibold text-gray-300 hover:text-cyan-300 transition-all">
           18+
         </button>
         <p class="text-center text-[10px] text-gray-600 pt-4">&copy; 2026 NovaBETT. All rights reserved.</p>
@@ -171,25 +170,25 @@
     </div>
 
     <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-xl border-t border-white/10 z-50 pointer-events-auto safe-area-bottom">
+    <nav class="fixed bottom-0 left-0 right-0 bg-[#0b141a]/95 backdrop-blur-xl border-t border-cyan-500/10 z-50 pointer-events-auto safe-area-bottom">
       <div class="flex justify-around items-center py-2 px-1">
-        <router-link to="/home" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200" :class="$route.path === '/home' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
+        <router-link to="/home" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200" :class="$route.path === '/home' ? 'text-cyan-400' : 'text-gray-500 hover:text-gray-300'">
           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
           <span class="text-[10px] font-semibold">Home</span>
         </router-link>
-        <router-link to="/promotions" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200" :class="$route.path === '/promotions' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
+        <router-link to="/promotions" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200" :class="$route.path === '/promotions' ? 'text-cyan-400' : 'text-gray-500 hover:text-gray-300'">
           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 12v8H4v-8l8-8 8 8zm-2 2H6v4h12v-4zM12 2l-8 8h16l-8-8z"/></svg>
           <span class="text-[10px] font-semibold">Promos</span>
         </router-link>
-        <router-link to="/agent" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200" :class="$route.path === '/agent' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
+        <router-link to="/agent" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200" :class="$route.path === '/agent' ? 'text-cyan-400' : 'text-gray-500 hover:text-gray-300'">
           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
           <span class="text-[10px] font-semibold">Agents</span>
         </router-link>
-        <router-link to="/service" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200" :class="$route.path === '/service' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
+        <router-link to="/service" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200" :class="$route.path === '/service' ? 'text-cyan-400' : 'text-gray-500 hover:text-gray-300'">
           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
           <span class="text-[10px] font-semibold">Chat</span>
         </router-link>
-        <router-link to="/account" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200" :class="$route.path === '/account' ? 'text-white' : 'text-gray-500 hover:text-gray-300'">
+        <router-link to="/account" class="flex flex-col items-center gap-1 px-4 py-1 rounded-xl transition-all duration-200" :class="$route.path === '/account' ? 'text-cyan-400' : 'text-gray-500 hover:text-gray-300'">
           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
           <span class="text-[10px] font-semibold">You</span>
         </router-link>
@@ -200,9 +199,9 @@
     <Teleport to="body">
       <Transition name="modal">
         <div v-if="showAuthModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md" @click.self="showAuthModal = false">
-          <div class="bg-[#0a0a0a] border border-yellow-600/30 rounded-3xl w-full max-w-xs p-5 shadow-2xl shadow-yellow-500/10 animate-slide-up">
+          <div class="bg-[#0a1219] border border-cyan-500/30 rounded-3xl w-full max-w-xs p-5 shadow-2xl shadow-cyan-500/10 animate-slide-up">
             <div class="text-center mb-6">
-              <h2 class="text-2xl font-black bg-gradient-to-r from-yellow-300 to-amber-400 bg-clip-text text-transparent">NovaBETT</h2>
+              <h2 class="text-2xl font-black bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">NovaBETT</h2>
               <p class="text-[10px] text-gray-500 mt-1">Premium Online Casino</p>
             </div>
 
@@ -210,12 +209,12 @@
             <div class="flex mb-6">
               <button @click="authTab = 'login'"
                 class="flex-1 py-2 rounded-l-full text-xs font-bold transition-all duration-300"
-                :class="authTab === 'login' ? 'bg-gradient-to-r from-yellow-500 to-amber-600 text-black shadow-lg' : 'bg-white/5 text-gray-400'">
+                :class="authTab === 'login' ? 'bg-gradient-to-r from-cyan-500 to-teal-600 text-white shadow-lg' : 'bg-cyan-500/5 text-gray-400'">
                 Login
               </button>
               <button @click="authTab = 'register'"
                 class="flex-1 py-2 rounded-r-full text-xs font-bold transition-all duration-300"
-                :class="authTab === 'register' ? 'bg-gradient-to-r from-yellow-500 to-amber-600 text-black shadow-lg' : 'bg-white/5 text-gray-400'">
+                :class="authTab === 'register' ? 'bg-gradient-to-r from-cyan-500 to-teal-600 text-white shadow-lg' : 'bg-cyan-500/5 text-gray-400'">
                 Register
               </button>
             </div>
@@ -225,20 +224,20 @@
               <div>
                 <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Username</label>
                 <input v-model="loginUsername" type="text"
-                  class="w-full p-2.5 rounded-lg bg-[#1a1a1a] border text-white text-sm focus:outline-none focus:border-yellow-500 transition-colors"
-                  :class="loginUsernameValid ? 'border-green-500' : 'border-gray-700'"
+                  class="w-full p-2.5 rounded-lg bg-[#111d26] border text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
+                  :class="loginUsernameValid ? 'border-cyan-500' : 'border-gray-700'"
                   @input="loginUsername = loginUsername.toUpperCase()" />
                 <p v-if="loginUsername && !loginUsernameValid" class="text-red-400 text-[10px] mt-1">Username required</p>
               </div>
               <div>
                 <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Password</label>
                 <input v-model="loginPassword" type="password"
-                  class="w-full p-2.5 rounded-lg bg-[#1a1a1a] border text-white text-sm focus:outline-none focus:border-yellow-500 transition-colors"
-                  :class="loginPasswordValid ? 'border-green-500' : 'border-gray-700'" />
+                  class="w-full p-2.5 rounded-lg bg-[#111d26] border text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
+                  :class="loginPasswordValid ? 'border-cyan-500' : 'border-gray-700'" />
                 <p v-if="loginPassword && !loginPasswordValid" class="text-red-400 text-[10px] mt-1">Password required</p>
               </div>
               <button @click="doLogin" :disabled="loginLoading || !loginUsernameValid || !loginPasswordValid"
-                class="w-full relative overflow-hidden bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-bold rounded-full shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                class="w-full relative overflow-hidden bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold rounded-full shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                 <span v-if="loginLoading" class="flex items-center justify-center gap-2">
                   <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
                   Signing In...
@@ -252,27 +251,27 @@
               <div>
                 <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Username</label>
                 <input v-model="regUsername" type="text"
-                  class="w-full p-2.5 rounded-lg bg-[#1a1a1a] border text-white text-sm focus:outline-none focus:border-yellow-500 transition-colors"
-                  :class="regUsernameValid ? 'border-green-500' : 'border-gray-700'"
+                  class="w-full p-2.5 rounded-lg bg-[#111d26] border text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
+                  :class="regUsernameValid ? 'border-cyan-500' : 'border-gray-700'"
                   @input="regUsername = regUsername.toUpperCase()" />
                 <p class="text-[10px] text-gray-500 mt-1">e.g. MOEMOE</p>
               </div>
               <div>
                 <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Password</label>
                 <input v-model="regPassword" type="password"
-                  class="w-full p-2.5 rounded-lg bg-[#1a1a1a] border text-white text-sm focus:outline-none focus:border-yellow-500 transition-colors"
-                  :class="regPasswordValid ? 'border-green-500' : 'border-gray-700'" />
+                  class="w-full p-2.5 rounded-lg bg-[#111d26] border text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
+                  :class="regPasswordValid ? 'border-cyan-500' : 'border-gray-700'" />
                 <p class="text-[10px] text-gray-500 mt-1">e.g. moe#223</p>
               </div>
               <div>
                 <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Phone Number</label>
                 <input v-model="regPhone" type="tel"
-                  class="w-full p-2.5 rounded-lg bg-[#1a1a1a] border text-white text-sm focus:outline-none focus:border-yellow-500 transition-colors"
-                  :class="regPhoneValid ? 'border-green-500' : 'border-gray-700'" />
+                  class="w-full p-2.5 rounded-lg bg-[#111d26] border text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
+                  :class="regPhoneValid ? 'border-cyan-500' : 'border-gray-700'" />
                 <p class="text-[10px] text-gray-500 mt-1">e.g. 09123456789</p>
               </div>
               <button @click="doRegister" :disabled="regLoading || !regUsernameValid || !regPasswordValid || !regPhoneValid"
-                class="w-full relative overflow-hidden bg-gradient-to-r from-yellow-500 to-amber-600 text-black font-bold rounded-full shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                class="w-full relative overflow-hidden bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold rounded-full shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                 <span v-if="regLoading" class="flex items-center justify-center gap-2">
                   <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
                   Creating...
@@ -293,10 +292,10 @@
     <Teleport to="body">
       <Transition name="modal">
         <div v-if="footerModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm" @click.self="footerModal = null">
-          <div class="bg-[#141428] border border-white/10 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-slide-up max-h-[80vh] overflow-y-auto">
+          <div class="bg-[#0a1219] border border-cyan-500/20 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-slide-up max-h-[80vh] overflow-y-auto">
             <h2 class="text-xl font-bold text-white text-center mb-4">{{ footerModalTitle }}</h2>
             <p class="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{{ footerModalContent }}</p>
-            <button @click="footerModal = null" class="mt-6 w-full bg-white hover:bg-gray-200 text-black font-bold py-3 rounded-2xl shadow transition-all">Close</button>
+            <button @click="footerModal = null" class="mt-6 w-full bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-bold py-3 rounded-2xl shadow transition-all">Close</button>
             <button @click="footerModal = null" class="absolute top-4 right-4 text-gray-400 hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
           </div>
         </div>
@@ -332,16 +331,6 @@ const username = ref('')
 const mainBalance = ref(0)
 const balanceLoading = ref(false)
 
-// Avatar random colors
-const avatarColors = [
-  'linear-gradient(135deg, #f6d365, #fda085)',
-  'linear-gradient(135deg, #a1c4fd, #c2e9fb)',
-  'linear-gradient(135deg, #ffecd2, #fcb69f)',
-  'linear-gradient(135deg, #a18cd1, #fbc2eb)',
-  'linear-gradient(135deg, #84fab0, #8fd3f4)'
-]
-const avatarColor = ref(avatarColors[0])
-
 // Auth modal
 const showAuthModal = ref(false)
 const authTab = ref('login')
@@ -369,13 +358,6 @@ onMounted(async () => {
   
   const savedLang = localStorage.getItem('lang')
   if (savedLang) { locale.value = savedLang; currentLang.value = savedLang }
-  
-  let storedAvatar = localStorage.getItem('avatarIndex')
-  if (storedAvatar === null) {
-    storedAvatar = Math.floor(Math.random() * avatarColors.length)
-    localStorage.setItem('avatarIndex', storedAvatar)
-  }
-  avatarColor.value = avatarColors[storedAvatar]
   
   fetchGames()
 })
@@ -494,7 +476,6 @@ async function fetchGames() {
     if (data && data.length > 0) {
       games.value = data
     } else {
-      // Fallback to dummy games if Supabase table is empty
       games.value = DUMMY_GAMES
       addToast('Loaded demo games', 'warning')
     }
