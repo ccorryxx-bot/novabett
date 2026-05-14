@@ -1,26 +1,22 @@
 <template>
-  <div class="min-h-screen bg-[#0a0a14] text-white pb-20 relative overflow-hidden">
-    <div class="fixed inset-0 pointer-events-none z-0">
-      <div class="absolute top-0 -right-20 w-72 h-72 bg-yellow-500/10 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-0 -left-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
-    </div>
-
-    <header class="sticky top-0 z-30 bg-black/70 backdrop-blur-lg border-b border-white/10 px-4 py-2">
-      <h2 class="text-lg font-bold text-center bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">{{ $t('profile') }}</h2>
+  <div class="min-h-screen bg-[#0b141a] text-gray-200 pb-20 relative overflow-hidden">
+    <header class="sticky top-0 z-30 bg-[#0b141a]/80 backdrop-blur-lg border-b border-cyan-500/10 px-4 py-2">
+      <h2 class="text-lg font-bold text-center text-cyan-300">My Account</h2>
     </header>
 
     <div class="px-4 pt-4 space-y-4 relative z-10">
       
       <!-- Profile Banner -->
-      <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-2xl">
+      <div class="bg-[#111d26] border border-cyan-500/10 rounded-2xl p-4 shadow-sm">
         <div class="flex items-center gap-4">
-          <div class="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-400 to-purple-600 flex items-center justify-center text-2xl font-black shadow-lg">
+          <div class="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-400 to-teal-600 flex items-center justify-center text-2xl font-black text-white shadow-lg">
             {{ username.charAt(0) }}
           </div>
           <div class="flex-1">
-            <p class="text-xl font-extrabold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">{{ username }}</p>
+            <p class="text-xl font-extrabold text-white">{{ username }}</p>
             <p class="text-xs text-gray-400 font-mono mt-1">Game ID: {{ gameId }}</p>
-            <span class="inline-flex items-center mt-2 px-3 py-1 rounded-full text-xs font-bold border" :class="vipBadgeClass">
+            <span class="inline-flex items-center mt-2 px-3 py-1 rounded-full text-xs font-bold border"
+              :class="vipBadgeClass">
               VIP {{ vipLevel }}
             </span>
           </div>
@@ -28,13 +24,13 @@
       </div>
 
       <!-- VIP Level Card -->
-      <div class="relative bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-2xl overflow-hidden">
+      <div class="relative bg-[#111d26] border border-cyan-500/10 rounded-2xl p-4 shadow-sm overflow-hidden">
         <div class="absolute inset-0 rounded-2xl blur-xl opacity-20" :class="vipGlowColor"></div>
         <div class="relative z-10">
           <div class="flex justify-between items-center">
             <div>
               <p class="text-xs text-gray-400 uppercase tracking-wider">Next Level Bonus</p>
-              <p class="text-2xl font-black text-yellow-300">{{ nextBonus }}%</p>
+              <p class="text-2xl font-black text-cyan-300">{{ nextBonus }}%</p>
             </div>
             <div class="text-right">
               <p class="text-xs text-gray-400">Progress</p>
@@ -47,70 +43,85 @@
               <span>{{ formatCurrency(nextLevelTarget) }} Ks</span>
             </div>
             <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
-              <div class="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full transition-all" :style="{ width: progressPercent + '%' }"></div>
+              <div class="h-full bg-gradient-to-r from-cyan-400 to-teal-500 rounded-full transition-all" :style="{ width: progressPercent + '%' }"></div>
             </div>
             <p class="text-[10px] text-gray-500 mt-1">Deposit {{ formatCurrency(remaining) }} more to reach VIP {{ nextLevel }}</p>
           </div>
         </div>
       </div>
 
-      <!-- Balances (Real from DB) -->
+      <!-- Balances -->
       <div class="grid grid-cols-2 gap-3">
-        <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-3 text-center shadow-xl">
-          <p class="text-xs text-gray-400">{{ $t('mainBalance') }}</p>
-          <p class="text-lg font-black text-emerald-400">{{ formatCurrency(mainBalance) }}</p>
+        <div class="bg-[#111d26] border border-cyan-500/10 rounded-2xl p-3 text-center shadow-sm">
+          <p class="text-xs text-gray-400">Main Balance</p>
+          <p class="text-lg font-black text-cyan-400">{{ formatCurrency(mainBalance) }}</p>
         </div>
-        <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-3 text-center shadow-xl">
-          <p class="text-xs text-gray-400">{{ $t('bonusBalance') }}</p>
-          <p class="text-lg font-black text-yellow-300">{{ formatCurrency(bonusBalance) }}</p>
+        <div class="bg-[#111d26] border border-cyan-500/10 rounded-2xl p-3 text-center shadow-sm">
+          <p class="text-xs text-gray-400">Bonus Balance</p>
+          <p class="text-lg font-black text-cyan-300">{{ formatCurrency(bonusBalance) }}</p>
         </div>
       </div>
 
       <!-- Wagering Progress -->
-      <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-2xl">
-        <h3 class="text-sm font-bold text-white mb-2">{{ $t('wageringProgress') }}</h3>
+      <div class="bg-[#111d26] border border-cyan-500/10 rounded-2xl p-4 shadow-sm">
+        <h3 class="text-sm font-bold text-white mb-2">Wagering Progress</h3>
         <div v-if="wageringTarget > 0">
           <div class="flex justify-between text-xs text-gray-400">
-            <span>{{ $t('remaining') }}</span>
+            <span>Remaining</span>
             <span>{{ formatCurrency(wageringRemaining) }} / {{ formatCurrency(wageringTarget) }}</span>
           </div>
           <div class="h-2 bg-gray-700 rounded-full overflow-hidden mt-1">
-            <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all" :style="{ width: wageringPercent + '%' }"></div>
+            <div class="h-full bg-gradient-to-r from-cyan-500 to-teal-500 rounded-full transition-all" :style="{ width: wageringPercent + '%' }"></div>
           </div>
         </div>
-        <p v-else class="text-xs text-gray-500 text-center py-2">{{ $t('noWagering') }}</p>
+        <p v-else class="text-xs text-gray-500 text-center py-2">No active wagering</p>
       </div>
 
       <!-- Quick Actions -->
       <div class="grid grid-cols-4 gap-2">
-        <button @click="$router.push('/home')" class="bg-emerald-500/20 border border-emerald-500/30 rounded-xl p-2 text-center hover:bg-emerald-500/30 transition-all active:scale-95">
+        <button @click="$router.push('/home')" class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-2 text-center hover:bg-cyan-500/20 transition-all active:scale-95">
           <span class="text-xl">💰</span>
-          <p class="text-[10px] font-bold text-emerald-400 mt-0.5">{{ $t('depositBtn') }}</p>
+          <p class="text-[10px] font-bold text-cyan-300 mt-0.5">Deposit</p>
         </button>
-        <button @click="$router.push('/home')" class="bg-rose-500/20 border border-rose-500/30 rounded-xl p-2 text-center hover:bg-rose-500/30 transition-all active:scale-95">
+        <button @click="$router.push('/home')" class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-2 text-center hover:bg-cyan-500/20 transition-all active:scale-95">
           <span class="text-xl">💸</span>
-          <p class="text-[10px] font-bold text-rose-400 mt-0.5">{{ $t('withdrawBtn') }}</p>
+          <p class="text-[10px] font-bold text-cyan-300 mt-0.5">Withdraw</p>
         </button>
-        <button @click="comingSoon" class="bg-blue-500/20 border border-blue-500/30 rounded-xl p-2 text-center hover:bg-blue-500/30 transition-all active:scale-95">
+        <button @click="comingSoon" class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-2 text-center hover:bg-cyan-500/20 transition-all active:scale-95">
           <span class="text-xl">📋</span>
-          <p class="text-[10px] font-bold text-blue-400 mt-0.5">{{ $t('history') }}</p>
+          <p class="text-[10px] font-bold text-cyan-300 mt-0.5">History</p>
         </button>
-        <button @click="logout" class="bg-red-500/20 border border-red-500/30 rounded-xl p-2 text-center hover:bg-red-500/30 transition-all active:scale-95">
+        <button @click="logout" class="bg-red-500/10 border border-red-500/20 rounded-xl p-2 text-center hover:bg-red-500/20 transition-all active:scale-95">
           <span class="text-xl">🚪</span>
-          <p class="text-[10px] font-bold text-red-400 mt-0.5">{{ $t('logout') }}</p>
+          <p class="text-[10px] font-bold text-red-400 mt-0.5">Logout</p>
         </button>
       </div>
 
     </div>
 
-    <!-- Bottom Nav -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-xl border-t border-white/10 z-40">
+    <!-- Bottom Nav (SVG icons) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-[#0b141a]/95 backdrop-blur-xl border-t border-cyan-500/10 z-40">
       <div class="flex justify-around items-center py-2">
-        <router-link to="/home" class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors"><span class="text-lg">🏠</span><span class="text-[10px]">{{ $t('home') }}</span></router-link>
-        <router-link to="/promotions" class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors"><span class="text-lg">🎁</span><span class="text-[10px]">{{ $t('promotions') }}</span></router-link>
-        <router-link to="/agent" class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors"><span class="text-lg">👥</span><span class="text-[10px]">{{ $t('agent') }}</span></router-link>
-        <router-link to="/service" class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors"><span class="text-lg">💬</span><span class="text-[10px]">{{ $t('service') }}</span></router-link>
-        <router-link to="/account" class="flex flex-col items-center gap-0.5 text-yellow-400 transition-colors"><span class="text-lg">👤</span><span class="text-[10px]">{{ $t('account') }}</span></router-link>
+        <router-link to="/home" class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          <span class="text-[10px]">Home</span>
+        </router-link>
+        <router-link to="/promotions" class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 12v8H4v-8l8-8 8 8zm-2 2H6v4h12v-4zM12 2l-8 8h16l-8-8z"/></svg>
+          <span class="text-[10px]">Promos</span>
+        </router-link>
+        <router-link to="/agent" class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          <span class="text-[10px]">Agents</span>
+        </router-link>
+        <router-link to="/service" class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+          <span class="text-[10px]">Chat</span>
+        </router-link>
+        <router-link to="/account" class="flex flex-col items-center gap-0.5 text-cyan-400 transition-colors">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+          <span class="text-[10px]">You</span>
+        </router-link>
       </div>
     </nav>
   </div>
@@ -121,16 +132,16 @@ import { ref, computed, onMounted } from 'vue'
 import { supabase } from '@/lib/supabase'
 
 const username = ref(localStorage.getItem('sb_username') || 'PLAYER')
-const gameId = ref('') // Will be set from user id
-
+const gameId = ref('')
 const mainBalance = ref(0)
 const bonusBalance = ref(0)
+const balanceLoading = ref(false)
 
 async function fetchWallet() {
   try {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    gameId.value = user.id.substring(0, 8).toUpperCase() // Use real user id as Game ID
+    gameId.value = user.id.substring(0, 8).toUpperCase()
     const { data: wallet, error } = await supabase
       .from('wallets')
       .select('main_balance, bonus_balance')
@@ -161,7 +172,6 @@ async function fetchTotalDeposited(userId) {
 
 onMounted(fetchWallet)
 
-// VIP logic (same as before)
 const vipLevel = computed(() => {
   if (deposited.value >= 500000) return 10
   if (deposited.value >= 300000) return 9
@@ -185,21 +195,24 @@ const progressPercent = computed(() => {
   const progress = (deposited.value - prevTarget) / (nextLevelTarget.value - prevTarget) * 100
   return Math.min(100, Math.max(0, Math.round(progress)))
 })
+
 const nextBonus = computed(() => {
   const bonuses = { 1: 10, 2: 30, 3: 40, 4: 50, 5: 55, 6: 60, 7: 70, 8: 80, 9: 100, 10: 120 }
   return bonuses[nextLevel.value] || 0
 })
+
 const vipGlowColor = computed(() => {
-  const colors = { 1: 'bg-gray-500', 2: 'bg-green-500', 3: 'bg-blue-500', 4: 'bg-purple-500', 5: 'bg-yellow-500', 6: 'bg-red-500', 7: 'bg-blue-200', 8: 'bg-gray-300', 9: 'bg-yellow-200', 10: 'bg-yellow-400' }
+  const colors = { 1: 'bg-gray-500', 2: 'bg-green-500', 3: 'bg-blue-500', 4: 'bg-purple-500', 5: 'bg-yellow-500', 6: 'bg-red-500', 7: 'bg-cyan-200', 8: 'bg-gray-300', 9: 'bg-yellow-200', 10: 'bg-yellow-400' }
   return colors[vipLevel.value] || 'bg-gray-500'
 })
+
 const vipBadgeClass = computed(() => {
   const base = 'text-xs font-bold border'
   switch (vipLevel.value) {
     case 10: return `${base} bg-yellow-400/20 text-yellow-400 border-yellow-400/40`
     case 9: return `${base} bg-yellow-200/20 text-yellow-200 border-yellow-200/40`
     case 8: return `${base} bg-gray-300/20 text-gray-300 border-gray-300/40`
-    case 7: return `${base} bg-blue-200/20 text-blue-400 border-blue-200/40`
+    case 7: return `${base} bg-cyan-200/20 text-cyan-400 border-cyan-200/40`
     case 6: return `${base} bg-red-500/20 text-red-400 border-red-400/40`
     case 5: return `${base} bg-yellow-500/20 text-yellow-400 border-yellow-400/40`
     case 4: return `${base} bg-purple-500/20 text-purple-400 border-purple-400/40`

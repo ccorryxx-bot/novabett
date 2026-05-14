@@ -11,49 +11,27 @@
           <h3 class="font-bold text-cyan-300">🎡 Lucky Wheel</h3>
           <span class="bg-cyan-500/10 text-cyan-300 px-3 py-1 rounded-full text-sm">{{ spinsLeft }} Spins</span>
         </div>
-
-        <!-- Wheel Container -->
-        <div class="flex justify-center my-6">
-          <div class="relative w-56 h-56">
-            <!-- Outer glow ring -->
-            <div class="absolute -inset-2 bg-gradient-to-r from-cyan-500 via-teal-500 to-cyan-500 rounded-full blur-md opacity-50 animate-pulse"></div>
-            
-            <!-- Wheel itself (6 segments) -->
-            <div ref="wheelEl" class="w-full h-full rounded-full bg-transparent border-4 border-cyan-500/50 shadow-2xl relative flex items-center justify-center transition-transform duration-[2000ms] ease-out overflow-hidden"
-              :style="{ transform: `rotate(${wheelRotation}deg)` }">
-              
-              <!-- Segment 1: 30K (top-right area) -->
-              <div class="absolute inset-0" style="background: conic-gradient(from 0deg, #00bcd4 0deg 60deg, #00838f 60deg 120deg, #00bcd4 120deg 180deg, #006064 180deg 240deg, #00bcd4 240deg 300deg, #00838f 300deg 360deg);"></div>
-              
-              <!-- Labels positioned at center of each segment -->
-              <span class="absolute text-white font-bold text-xs drop-shadow-lg" style="top:15%; right:20%; transform: rotate(30deg);">30K</span>
-              <span class="absolute text-white font-bold text-xs drop-shadow-lg" style="bottom:15%; right:20%; transform: rotate(-30deg);">50K</span>
-              <span class="absolute text-white font-bold text-xs drop-shadow-lg" style="bottom:15%; left:20%; transform: rotate(30deg);">70K</span>
-              <span class="absolute text-white font-bold text-xs drop-shadow-lg" style="top:15%; left:20%; transform: rotate(-30deg);">100K</span>
-              <!-- Empty segments (top-left and bottom-right) -->
-              <span class="absolute text-gray-400 font-bold text-[10px]" style="top:30%; right:8%; transform: rotate(60deg);">Empty</span>
-              <span class="absolute text-gray-400 font-bold text-[10px]" style="bottom:30%; left:8%; transform: rotate(-60deg);">Empty</span>
+        <div class="flex justify-center">
+          <div class="relative w-48 h-48">
+            <!-- Wheel -->
+            <div class="w-full h-full rounded-full border-4 border-cyan-500/30 bg-gradient-to-br from-cyan-500 via-teal-600 to-blue-800 shadow-2xl relative overflow-hidden transform transition-transform duration-1000" :class="{ 'rotate-[720deg]': spinning }">
+              <span class="absolute top-5 right-5 text-white font-bold text-sm drop-shadow-lg">30K</span>
+              <span class="absolute bottom-5 right-5 text-white font-bold text-sm drop-shadow-lg">50K</span>
+              <span class="absolute bottom-5 left-5 text-white font-bold text-sm drop-shadow-lg">70K</span>
+              <span class="absolute top-5 left-5 text-white font-bold text-sm drop-shadow-lg">100K</span>
             </div>
-            
-            <!-- Pointer triangle (fixed) -->
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-0 h-0 border-l-8 border-r-8 border-t-[16px] border-l-transparent border-r-transparent border-t-cyan-300 drop-shadow-lg z-10"></div>
-            
-            <!-- Spin button (center) -->
-            <button @click="spinWheel" :disabled="spinning || spinsLeft <= 0" class="absolute inset-0 z-20 flex items-center justify-center">
-              <span class="text-3xl bg-black/50 rounded-full p-3">🎡</span>
+            <!-- Pointer -->
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 w-0 h-0 border-l-8 border-r-8 border-t-[16px] border-l-transparent border-r-transparent border-t-cyan-300 drop-shadow-lg z-10"></div>
+            <!-- Center Button -->
+            <button @click="spinWheel" :disabled="spinning || spinsLeft <= 0" class="absolute inset-0 flex items-center justify-center z-20">
+              <span class="text-3xl bg-black/50 rounded-full p-2">🎡</span>
             </button>
           </div>
         </div>
-
-        <!-- Win message -->
         <div v-if="lastWin" class="text-center mt-3 animate-bounce">
-          <p class="text-cyan-400 font-bold text-lg">🏆 You won {{ lastWin.toLocaleString() }} Ks!</p>
-          <p class="text-gray-400 text-xs">Wagering x10 required</p>
+          <p class="text-cyan-400 font-bold">🏆 You won {{ lastWin.toLocaleString() }} Ks!</p>
         </div>
-
-        <div class="mt-4 text-center text-xs text-gray-500">
-          💰 ငွေသွင်းတိုင်း Spin ထပ်ရမည်
-        </div>
+        <div class="mt-3 text-center text-xs text-gray-500">💰 Deposit to earn more spins</div>
       </div>
 
       <!-- Referral Code -->
@@ -84,17 +62,31 @@
         </div>
         <p v-else class="text-center text-gray-500 py-4">No active bonuses</p>
       </div>
-
     </div>
 
-    <!-- Bottom Nav -->
+    <!-- Bottom Nav (SVG icons, no emoji) -->
     <nav class="fixed bottom-0 left-0 right-0 bg-[#0b141a]/95 backdrop-blur-xl border-t border-cyan-500/10 z-50 py-2">
-      <div class="flex justify-around">
-        <router-link to="/home" class="flex flex-col items-center text-gray-500 hover:text-gray-300"><span class="text-lg">🏠</span><span class="text-[10px]">Home</span></router-link>
-        <router-link to="/promotions" class="flex flex-col items-center text-cyan-400"><span class="text-lg">🎁</span><span class="text-[10px]">Promos</span></router-link>
-        <router-link to="/agent" class="flex flex-col items-center text-gray-500 hover:text-gray-300"><span class="text-lg">👥</span><span class="text-[10px]">Agents</span></router-link>
-        <router-link to="/service" class="flex flex-col items-center text-gray-500 hover:text-gray-300"><span class="text-lg">💬</span><span class="text-[10px]">Chat</span></router-link>
-        <router-link to="/account" class="flex flex-col items-center text-gray-500 hover:text-gray-300"><span class="text-lg">👤</span><span class="text-[10px]">You</span></router-link>
+      <div class="flex justify-around items-center">
+        <router-link to="/home" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 transition-colors">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          <span class="text-[10px] font-semibold">Home</span>
+        </router-link>
+        <router-link to="/promotions" class="flex flex-col items-center gap-1 text-cyan-400 transition-colors">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 12v8H4v-8l8-8 8 8zm-2 2H6v4h12v-4zM12 2l-8 8h16l-8-8z"/></svg>
+          <span class="text-[10px] font-semibold">Promos</span>
+        </router-link>
+        <router-link to="/agent" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 transition-colors">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          <span class="text-[10px] font-semibold">Agents</span>
+        </router-link>
+        <router-link to="/service" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 transition-colors">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+          <span class="text-[10px] font-semibold">Chat</span>
+        </router-link>
+        <router-link to="/account" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 transition-colors">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+          <span class="text-[10px] font-semibold">You</span>
+        </router-link>
       </div>
     </nav>
   </div>
@@ -116,54 +108,21 @@ const copyReferral = () => {
   }
 }
 
-// Lucky Wheel
 const spinsLeft = ref(5)
 const spinning = ref(false)
 const lastWin = ref(null)
-const wheelRotation = ref(0)
-
-// Prizes mapping for 6 segments (0 to 5)
-// Segment index: 0 = 30K, 1 = 50K, 2 = 70K, 3 = 100K, 4 = Empty, 5 = Empty
-const prizes = [30000, 50000, 70000, 100000, 0, 0] // 0 means empty
+const prizes = [30000, 50000, 70000, 100000]
 
 const spinWheel = () => {
   if (spinning.value || spinsLeft.value <= 0) return
   spinning.value = true
   spinsLeft.value--
-
-  // Random win index (0-5)
-  const winIndex = Math.floor(Math.random() * 6)
-  
-  // Calculate rotation to land on that segment
-  // Each segment is 60 degrees. Segment 0 starts at -30 degrees? Let's make segment 0 at top (pointer points to top).
-  // With conic-gradient we defined from 0deg, so segment 0 is from 0 to 60deg (right side? Actually conic from 0deg starts at 3 o'clock, but we'll just make the pointer at top and map accordingly.
-  // Simpler: we'll rotate wheel so that the winning segment aligns with the pointer (top).
-  // If we want segment 0 (30K) at top when rotation = 0, we need to rotate wheel so that its label appears at top.
-  // We can just compute a target angle that brings segment `winIndex` to the top. Since we have 6 segments, each 60deg.
-  // Segment 0's center is at 30deg from the start? We'll just use a base offset.
-  // We'll calculate final rotation = currentRotation + 5 full spins + (targetAngle - currentMod + 360) % 360
-  const segmentCenter = 30 + winIndex * 60 // center angle of segment (from 0deg line, clockwise)
-  const currentMod = wheelRotation.value % 360
-  let delta = segmentCenter - currentMod
-  if (delta < 0) delta += 360
-  // Add 5 full rotations for dramatic effect
-  const finalRotation = wheelRotation.value + 360 * 5 + delta
-  wheelRotation.value = finalRotation
-
-  // After animation, set win
   setTimeout(() => {
-    const prize = prizes[winIndex]
-    if (prize > 0) {
-      lastWin.value = prize
-    } else {
-      lastWin.value = null
-      // Optionally show "No luck" message
-    }
+    lastWin.value = prizes[Math.floor(Math.random() * prizes.length)]
     spinning.value = false
-  }, 2000)
+  }, 1000)
 }
 
-// Mock bonuses
 const activeBonuses = ref([
   { id: 1, name: 'First Deposit Bonus', desc: '70% match bonus', amount: 1400 },
   { id: 2, name: 'Lucky Wheel Win', desc: 'Wagering x10', amount: 50000 }
