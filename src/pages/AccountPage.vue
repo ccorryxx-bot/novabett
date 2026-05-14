@@ -222,8 +222,8 @@ const vipBadgeClass = computed(() => {
   }
 })
 
-const wageringTarget = ref(170000)
-const wageringCompleted = ref(56000)
+const wageringTarget = ref(0)
+const wageringCompleted = ref(0)
 const wageringRemaining = computed(() => Math.max(0, wageringTarget.value - wageringCompleted.value))
 const wageringPercent = computed(() => Math.round((wageringCompleted.value / wageringTarget.value) * 100) || 0)
 
