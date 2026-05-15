@@ -85,22 +85,23 @@
         </div>
       </div>
 
-      <!-- Carousel -->
-      <div class="px-4 pt-4">
-        <div class="rounded-2xl overflow-hidden relative h-40 bg-[#111d26] border border-cyan-500/10 shadow-sm">
-          <div class="absolute inset-0 flex transition-transform duration-500" :style="{ transform: `translateX(-${carouselIndex * 100}%)` }">
-            <div v-for="(img, i) in carouselImages" :key="i" class="w-full h-full flex-shrink-0 flex items-center justify-center text-xl font-bold text-cyan-500/20" :style="{ background: img.color }">
-              <span class="text-gray-300 text-lg font-semibold tracking-wider">{{ img.title }}</span>
-            </div>
-          </div>
-          <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-            <button v-for="(img, i) in carouselImages" :key="i" @click="carouselIndex = i" class="w-2 h-2 rounded-full transition-all" :class="i === carouselIndex ? 'bg-cyan-400 w-4' : 'bg-gray-600'"></button>
-          </div>
-          <button @click="prevSlide" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
-          <button @click="nextSlide" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
-        </div>
+<!-- Carousel -->
+<div class="px-4 pt-4">
+  <div class="rounded-2xl overflow-hidden relative h-40 bg-[#111d26] border border-cyan-500/10 shadow-sm">
+    <div class="absolute inset-0 flex transition-transform duration-500" :style="{ transform: `translateX(-${carouselIndex * 100}%)` }">
+      <div v-for="(img, i) in carouselImages" :key="i" class="w-full h-full flex-shrink-0 relative flex items-center justify-center">
+        <img :src="img.image" class="absolute inset-0 w-full h-full object-cover" alt="" />
+        <div class="absolute inset-0 bg-black/40"></div>
+        <span class="relative z-10 text-white text-lg font-bold drop-shadow-lg">{{ img.title }}</span>
       </div>
-
+    </div>
+    <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+      <button v-for="(img, i) in carouselImages" :key="i" @click="carouselIndex = i" class="w-2 h-2 rounded-full transition-all" :class="i === carouselIndex ? 'bg-cyan-400 w-4' : 'bg-gray-600'"></button>
+    </div>
+    <button @click="prevSlide" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+    <button @click="nextSlide" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+</div>
       <!-- Game Categories -->
       <div class="px-4 pt-6 pb-3">
         <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Game Categories</h2>
