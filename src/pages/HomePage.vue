@@ -85,23 +85,24 @@
         </div>
       </div>
 
-<!-- Carousel -->
-<div class="px-4 pt-4">
-  <div class="rounded-2xl overflow-hidden relative h-40 bg-[#111d26] border border-cyan-500/10 shadow-sm">
-    <div class="absolute inset-0 flex transition-transform duration-500" :style="{ transform: `translateX(-${carouselIndex * 100}%)` }">
-      <div v-for="(img, i) in carouselImages" :key="i" class="w-full h-full flex-shrink-0 relative flex items-center justify-center">
-        <img :src="img.image" class="absolute inset-0 w-full h-full object-cover" alt="" />
-        <div class="absolute inset-0 bg-black/40"></div>
-        <span class="relative z-10 text-white text-lg font-bold drop-shadow-lg">{{ img.title }}</span>
+      <!-- Carousel with FIXED image display -->
+      <div class="px-4 pt-4">
+        <div class="rounded-2xl overflow-hidden relative h-40 bg-[#111d26] border border-cyan-500/10 shadow-sm">
+          <div class="absolute inset-0 flex transition-transform duration-500" :style="{ transform: `translateX(-${carouselIndex * 100}%)` }">
+            <div v-for="(img, i) in carouselImages" :key="i" class="w-full h-full flex-shrink-0 relative">
+              <img :src="img.image" class="w-full h-full object-cover" alt="" />
+              <div class="absolute inset-0 bg-black/40"></div>
+              <span class="absolute inset-0 flex items-center justify-center text-white text-lg font-bold drop-shadow-lg">{{ img.title }}</span>
+            </div>
+          </div>
+          <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+            <button v-for="(img, i) in carouselImages" :key="i" @click="carouselIndex = i" class="w-2 h-2 rounded-full transition-all" :class="i === carouselIndex ? 'bg-cyan-400 w-4' : 'bg-gray-600'"></button>
+          </div>
+          <button @click="prevSlide" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+          <button @click="nextSlide" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
+        </div>
       </div>
-    </div>
-    <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-      <button v-for="(img, i) in carouselImages" :key="i" @click="carouselIndex = i" class="w-2 h-2 rounded-full transition-all" :class="i === carouselIndex ? 'bg-cyan-400 w-4' : 'bg-gray-600'"></button>
-    </div>
-    <button @click="prevSlide" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
-    <button @click="nextSlide" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white rounded-full p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
-  </div>
-</div>
+
       <!-- Game Categories -->
       <div class="px-4 pt-6 pb-3">
         <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Game Categories</h2>
@@ -196,7 +197,7 @@
       </div>
     </nav>
 
-    <!-- ===== AUTH MODAL (Luxury + Validation) ===== -->
+    <!-- AUTH MODAL -->
     <Teleport to="body">
       <Transition name="modal">
         <div v-if="showAuthModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md" @click.self="showAuthModal = false">
@@ -205,22 +206,14 @@
               <h2 class="text-2xl font-black bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">NovaBETT</h2>
               <p class="text-[10px] text-gray-500 mt-1">Premium Online Casino</p>
             </div>
-
-            <!-- Tabs -->
             <div class="flex mb-6">
               <button @click="authTab = 'login'"
                 class="flex-1 py-2 rounded-l-full text-xs font-bold transition-all duration-300"
-                :class="authTab === 'login' ? 'bg-gradient-to-r from-cyan-500 to-teal-600 text-white shadow-lg' : 'bg-cyan-500/5 text-gray-400'">
-                Login
-              </button>
+                :class="authTab === 'login' ? 'bg-gradient-to-r from-cyan-500 to-teal-600 text-white shadow-lg' : 'bg-cyan-500/5 text-gray-400'">Login</button>
               <button @click="authTab = 'register'"
                 class="flex-1 py-2 rounded-r-full text-xs font-bold transition-all duration-300"
-                :class="authTab === 'register' ? 'bg-gradient-to-r from-cyan-500 to-teal-600 text-white shadow-lg' : 'bg-cyan-500/5 text-gray-400'">
-                Register
-              </button>
+                :class="authTab === 'register' ? 'bg-gradient-to-r from-cyan-500 to-teal-600 text-white shadow-lg' : 'bg-cyan-500/5 text-gray-400'">Register</button>
             </div>
-
-            <!-- Login Form -->
             <div v-if="authTab === 'login'" class="space-y-4">
               <div>
                 <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Username</label>
@@ -246,8 +239,6 @@
                 <span v-else>Sign In</span>
               </button>
             </div>
-
-            <!-- Register Form -->
             <div v-else class="space-y-4">
               <div>
                 <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Username</label>
@@ -280,7 +271,6 @@
                 <span v-else>Join NovaBETT</span>
               </button>
             </div>
-
             <button @click="showAuthModal = false" class="absolute top-3 right-3 text-gray-500 hover:text-white transition-colors">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
@@ -303,7 +293,6 @@
       </Transition>
     </Teleport>
 
-    <!-- Deposit/Withdraw Modals -->
     <DepositModal v-model="showDepositModal" @submit="handleDepositSubmit" />
     <WithdrawModal v-model="showWithdrawModal" :balance="mainBalance" @submit="handleWithdrawSubmit" />
   </div>
@@ -317,7 +306,6 @@ import { supabase } from '@/lib/supabase'
 import DepositModal from '@/components/DepositModal.vue'
 import WithdrawModal from '@/components/WithdrawModal.vue'
 
-// ==================== DUMMY GAMES FALLBACK ====================
 const DUMMY_GAMES = [
   { id: 'dummy-1', name: 'Jackpot Fishing', provider: 'JILI', category: 'Fishing', image_url: '🎣' },
   { id: 'dummy-2', name: 'Gates of Olympus', provider: 'Pragmatic', category: 'Slot', image_url: '⚡' },
@@ -342,25 +330,18 @@ const toggleLanguage = () => {
   localStorage.setItem('lang', locale.value)
 }
 
-// Auth state
 const isLoggedIn = ref(false)
 const username = ref('')
 const mainBalance = ref(0)
 const balanceLoading = ref(false)
-
-// Auth modal
 const showAuthModal = ref(false)
 const authTab = ref('login')
-
-// Toast system
 const toasts = ref([])
 let toastId = 0
 const addToast = (message, type = 'success') => {
   const id = ++toastId
   toasts.value.push({ id, message, type })
-  setTimeout(() => {
-    toasts.value = toasts.value.filter(t => t.id !== id)
-  }, 3000)
+  setTimeout(() => { toasts.value = toasts.value.filter(t => t.id !== id) }, 3000)
 }
 
 onMounted(async () => {
@@ -370,20 +351,13 @@ onMounted(async () => {
     authTab.value = 'login'
     window.history.replaceState({}, document.title, window.location.pathname)
   }
-
   const { data: { session } } = await supabase.auth.getSession()
   if (session) {
     await loadUserInfo()
-    // fallback from localStorage
-    if (!username.value) {
-      const saved = localStorage.getItem('sb_username')
-      if (saved) username.value = saved
-    }
+    if (!username.value) { const saved = localStorage.getItem('sb_username'); if (saved) username.value = saved }
   }
-
   const savedLang = localStorage.getItem('lang')
   if (savedLang) { locale.value = savedLang; currentLang.value = savedLang }
-
   fetchGames()
 })
 
@@ -406,14 +380,12 @@ async function fetchBalance() {
   } catch (e) { console.error(e) } finally { balanceLoading.value = false }
 }
 
-// Form validation
 const loginUsernameValid = computed(() => loginUsername.value.trim().length > 0)
 const loginPasswordValid = computed(() => loginPassword.value.length > 0)
 const regUsernameValid = computed(() => regUsername.value.trim().length > 0)
 const regPasswordValid = computed(() => regPassword.value.length >= 3)
 const regPhoneValid = computed(() => regPhone.value.trim().length >= 6)
 
-// Login
 const loginUsername = ref('')
 const loginPassword = ref('')
 const loginLoading = ref(false)
@@ -431,13 +403,9 @@ async function doLogin() {
     addToast('Successfully logged in', 'success')
     showAuthModal.value = false
     loginUsername.value = ''; loginPassword.value = ''
-  } catch (e) {
-    loginError.value = e.message
-    addToast(e.message, 'error')
-  } finally { loginLoading.value = false }
+  } catch (e) { loginError.value = e.message; addToast(e.message, 'error') } finally { loginLoading.value = false }
 }
 
-// Register
 const regUsername = ref('')
 const regPhone = ref('')
 const regPassword = ref('')
@@ -452,7 +420,7 @@ async function doRegister() {
     const res = await fetch('https://vuywhhmwrqykukcemifd.supabase.co/functions/v1/register3', {
       method: 'POST',
       headers: { 'Authorization': `Bearer sb_publishable_nQArOtFqTbi9ZtJCJC0STA_pE4ztXGb`, 'apikey': 'sb_publishable_nQArOtFqTbi9ZtJCJC0STA_pE4ztXGb', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: regUsername.value, phone: regPhone.value, password: regPassword.value, referral: referral })
+      body: JSON.stringify({ username: regUsername.value, phone: regPhone.value, password: regPassword.value, referral })
     })
     const data = await res.json()
     if (data.error) throw new Error(data.error)
@@ -464,44 +432,22 @@ async function doRegister() {
     addToast('Account created successfully!', 'success')
     showAuthModal.value = false
     regUsername.value = ''; regPhone.value = ''; regPassword.value = ''
-  } catch (e) {
-    regError.value = e.message
-    addToast(e.message, 'error')
-  } finally { regLoading.value = false }
+  } catch (e) { regError.value = e.message; addToast(e.message, 'error') } finally { regLoading.value = false }
 }
 
-// Supabase Games Fetch with fallback
 const games = ref([])
 const loadingGames = ref(true)
 const fetchError = ref(null)
-
 async function fetchGames() {
   loadingGames.value = true
   fetchError.value = null
   try {
-    const { data, error } = await supabase
-      .from('games')
-      .select('*')
-      .eq('is_active', true)
-      .order('provider', { ascending: true })
+    const { data, error } = await supabase.from('games').select('*').eq('is_active', true).order('provider', { ascending: true })
     if (error) throw error
-    if (data && data.length > 0) {
-      games.value = data
-    } else {
-      games.value = [...DUMMY_GAMES]
-      addToast('Loaded demo games', 'warning')
-    }
-  } catch (e) {
-    console.error('Game fetch error:', e)
-    fetchError.value = 'Failed to load games. Using demo data.'
-    games.value = [...DUMMY_GAMES]
-    addToast('Loaded demo games', 'error')
-  } finally {
-    loadingGames.value = false
-  }
+    if (data && data.length > 0) { games.value = data } else { games.value = [...DUMMY_GAMES]; addToast('Loaded demo games', 'warning') }
+  } catch (e) { console.error('Game fetch error:', e); fetchError.value = 'Failed to load games. Using demo data.'; games.value = [...DUMMY_GAMES]; addToast('Loaded demo games', 'error') } finally { loadingGames.value = false }
 }
 
-// Jackpot (animated counter)
 const jackpot = ref(893619157998)
 const displayedJackpot = ref('893,619,157,998')
 const formatNumber = (num) => new Intl.NumberFormat('en-US').format(num)
@@ -516,22 +462,16 @@ function animateValue(start, end) {
   let current = start
   const range = end - start, dur = 800, stepTime = 20, steps = dur / stepTime, inc = range / steps
   let step = 0
-  const timer = setInterval(() => {
-    current += inc
-    if (step >= steps) { current = end; clearInterval(timer) }
-    displayedJackpot.value = formatNumber(Math.floor(current))
-    step++
-  }, stepTime)
+  const timer = setInterval(() => { current += inc; if (step >= steps) { current = end; clearInterval(timer) }; displayedJackpot.value = formatNumber(Math.floor(current)); step++ }, stepTime)
 }
 const formatCurrency = (num) => new Intl.NumberFormat('en-US').format(num)
 
-// Carousel
 const carouselImages = [
-  { color: 'linear-gradient(135deg, #1a1a2e, #16213e)', title: 'SLOT GAMES' },
-  { color: 'linear-gradient(135deg, #0f3460, #533483)', title: 'FISHING' },
-  { color: 'linear-gradient(135deg, #e94560, #0f3460)', title: 'LIVE CASINO' },
-  { color: 'linear-gradient(135deg, #f5a623, #e94560)', title: 'SPORTS' },
-  { color: 'linear-gradient(135deg, #00b4d8, #0077b6)', title: 'ARCADE' }
+  { image: '/images/banners/banner1.jpg', title: 'SLOT GAMES' },
+  { image: '/images/banners/banner2.jpg', title: 'FISHING' },
+  { image: '/images/banners/banner3.jpg', title: 'LIVE CASINO' },
+  { image: '/images/banners/banner4.jpg', title: 'SPORTS' },
+  { image: '/images/banners/banner5.jpg', title: 'ARCADE' }
 ]
 const carouselIndex = ref(0)
 let carouselTimer
@@ -540,60 +480,30 @@ const prevSlide = () => { carouselIndex.value = carouselIndex.value === 0 ? caro
 const nextSlide = () => { carouselIndex.value = (carouselIndex.value + 1) % carouselImages.length; resetTimer() }
 const resetTimer = () => { clearInterval(carouselTimer); carouselTimer = setInterval(() => nextSlide(), 4000) }
 
-// Search
 const searchVisible = ref(false)
 const searchQuery = ref('')
 const toggleSearch = () => { searchVisible.value = !searchVisible.value }
 
-// Categories
 const categories = ref([
-  { name: 'All', logo: null },
-  { name: 'JILI', logo: '/images/providers/jili.png' },
-  { name: 'PP', logo: '/images/providers/pp.png' },
-  { name: 'PG', logo: '/images/providers/pg.png' },
-  { name: 'Pragmatic', logo: '/images/providers/pragmatic.png' },
-  { name: 'Live', logo: null },
-  { name: 'Fishing', logo: null }
+  { name: 'All', logo: null }, { name: 'JILI', logo: '/images/providers/jili.png' }, { name: 'PP', logo: '/images/providers/pp.png' }, { name: 'PG', logo: '/images/providers/pg.png' }, { name: 'Pragmatic', logo: '/images/providers/pragmatic.png' }, { name: 'Live', logo: null }, { name: 'Fishing', logo: null }
 ])
 const activeCategory = ref('All')
-
 const filteredGames = computed(() => {
   let list = games.value
-  if (activeCategory.value !== 'All') {
-    list = list.filter(g => g.provider === activeCategory.value || g.category === activeCategory.value)
-  }
-  if (searchQuery.value) {
-    list = list.filter(g => g.name.toLowerCase().includes(searchQuery.value.toLowerCase()))
-  }
+  if (activeCategory.value !== 'All') { list = list.filter(g => g.provider === activeCategory.value || g.category === activeCategory.value) }
+  if (searchQuery.value) { list = list.filter(g => g.name.toLowerCase().includes(searchQuery.value.toLowerCase())) }
   return list
 })
-
 const openGame = (game) => alert(`Opening ${game.name}`)
 
-// Deposit / Withdraw
 const showDepositModal = ref(false)
 const showWithdrawModal = ref(false)
 const handleDepositSubmit = (data) => { addToast('Deposit request submitted!', 'success') }
 const handleWithdrawSubmit = (data) => { addToast('Withdrawal request submitted!', 'success') }
 
-// Footer modals
 const footerModal = ref(null)
-const footerModalTitle = computed(() => {
-  switch (footerModal.value) {
-    case 'team': return 'NovaBETT Team'
-    case 'terms': return 'Terms of Service'
-    case 'plus18': return '18+ Responsible Gaming'
-    default: return ''
-  }
-})
-const footerModalContent = computed(() => {
-  switch (footerModal.value) {
-    case 'team': return 'We are a passionate team...'
-    case 'terms': return 'Please read our terms...'
-    case 'plus18': return 'You must be 18+ to play.'
-    default: return ''
-  }
-})
+const footerModalTitle = computed(() => ({ team: 'NovaBETT Team', terms: 'Terms of Service', plus18: '18+ Responsible Gaming' }[footerModal.value] || ''))
+const footerModalContent = computed(() => ({ team: 'We are a passionate team...', terms: 'Please read our terms...', plus18: 'You must be 18+ to play.' }[footerModal.value] || ''))
 const showFooterModal = (type) => { footerModal.value = type }
 </script>
 
