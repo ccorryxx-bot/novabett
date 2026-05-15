@@ -92,7 +92,6 @@
             <div v-for="(img, i) in carouselImages" :key="i" class="w-full h-full flex-shrink-0 relative">
               <img :src="img.image" class="w-full h-full object-cover" alt="" />
               <div class="absolute inset-0 bg-black/40"></div>
-              <span class="absolute inset-0 flex items-center justify-center text-white text-lg font-bold drop-shadow-lg">{{ img.title }}</span>
             </div>
           </div>
           <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
