@@ -306,6 +306,7 @@ import WithdrawModal from '@/components/WithdrawModal.vue'
 async function fetchGames() {
   loadingGames.value = true
   fetchError.value = null
+  console.log('Fetching games from Supabase...')
   try {
     const { data, error } = await supabase
       .from('games')
@@ -314,9 +315,12 @@ async function fetchGames() {
       .order('provider', { ascending: true })
     if (error) throw error
     games.value = data || []
+    console.log('Games loaded:', games.value.length)
+    addToast(`Loaded ${games.value.length} games`, 'success')
   } catch (e) {
     console.error('Game fetch error:', e)
-    fetchError.value = 'Failed to load games. Please try again.'
+    fetchError.value = 'Failed to load games.'
+    addToast('Failed to load games', 'error')
   } finally {
     loadingGames.value = false
   }
