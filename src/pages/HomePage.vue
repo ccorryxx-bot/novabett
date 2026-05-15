@@ -303,21 +303,24 @@ import { supabase } from '@/lib/supabase'
 import DepositModal from '@/components/DepositModal.vue'
 import WithdrawModal from '@/components/WithdrawModal.vue'
 
-const DUMMY_GAMES = [
-  { id: 'dummy-1', name: 'Jackpot Fishing', provider: 'JILI', category: 'Fishing', image_url: '🎣' },
-  { id: 'dummy-2', name: 'Gates of Olympus', provider: 'Pragmatic', category: 'Slot', image_url: '⚡' },
-  { id: 'dummy-3', name: 'Mahjong Ways 2', provider: 'PG', category: 'Slot', image_url: '🀄' },
-  { id: 'dummy-4', name: 'Charge Buffalo', provider: 'JILI', category: 'Slot', image_url: '🐃' },
-  { id: 'dummy-5', name: 'Money Boxing', provider: 'PP', category: 'Slot', image_url: '🥊' },
-  { id: 'dummy-6', name: 'Boxing King', provider: 'PG', category: 'Slot', image_url: '👑' },
-  { id: 'dummy-7', name: 'Fortune Coins', provider: 'PP', category: 'Slot', image_url: '🪙' },
-  { id: 'dummy-8', name: 'Fortune Gems 2', provider: 'PG', category: 'Slot', image_url: '💎' },
-  { id: 'dummy-9', name: 'Dragon Fortune', provider: 'JILI', category: 'Slot', image_url: '🐉' },
-  { id: 'dummy-10', name: 'Golden Empire', provider: 'Pragmatic', category: 'Slot', image_url: '🏛️' },
-  { id: 'dummy-11', name: 'Super Ace', provider: 'PG', category: 'Slot', image_url: '🃏' },
-  { id: 'dummy-12', name: 'Crazy777', provider: 'JILI', category: 'Slot', image_url: '🎰' }
-]
-
+async function fetchGames() {
+  loadingGames.value = true
+  fetchError.value = null
+  try {
+    const { data, error } = await supabase
+      .from('games')
+      .select('*')
+      .eq('is_active', true)
+      .order('provider', { ascending: true })
+    if (error) throw error
+    games.value = data || []
+  } catch (e) {
+    console.error('Game fetch error:', e)
+    fetchError.value = 'Failed to load games. Please try again.'
+  } finally {
+    loadingGames.value = false
+  }
+}
 const route = useRoute()
 const { locale } = useI18n()
 const currentLang = ref(locale.value)
