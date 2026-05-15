@@ -482,7 +482,7 @@ const searchQuery = ref('')
 const toggleSearch = () => { searchVisible.value = !searchVisible.value }
 
 const categories = ref([
-  { name: 'All', logo: null }, { name: 'JILI', logo: '/images/providers/jili.png' }, { name: 'PP', logo: '/images/providers/pp.png' }, { name: 'PG', logo: '/images/providers/pg.png' }, { name: 'Pragmatic', logo: '/images/providers/pragmatic.png' }, { name: 'Live', logo: null }, { name: 'Fishing', logo: null }
+  { name: 'All', logo: null }, { name: 'JILI', logo: '/images/providers/logo1.jpg' }, { name: 'PP', logo: '/images/providers/logo2.jpg' }, { name: 'PG', logo: '/images/providers/logo3.jpg' }, { name: 'Pragmatic', logo: '/images/providers/logo4.jpg' }, { name: 'Live', logo: '/images/providers/logo5.jpg' }, { name: 'Fishing', logo: '/images/providers/logo6.jpg' }
 ])
 const activeCategory = ref('All')
 const filteredGames = computed(() => {
