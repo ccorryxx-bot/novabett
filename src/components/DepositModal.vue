@@ -52,7 +52,6 @@
             
             <!-- Recipient Info with Copy Buttons -->
             <div class="bg-white/5 rounded-xl p-4 mb-4 border border-white/10 space-y-3">
-              <!-- Name -->
               <div class="flex items-center justify-between">
                 <div>
                   <p class="text-gray-400 text-xs mb-1">လက်ခံသူ</p>
@@ -63,7 +62,6 @@
                 </button>
               </div>
 
-              <!-- Account Number -->
               <div class="flex items-center justify-between">
                 <div>
                   <p class="text-gray-400 text-xs mb-1">အကောင့်နံပါတ်</p>
@@ -75,7 +73,6 @@
               </div>
             </div>
 
-            <!-- Copied Toast -->
             <p v-if="copied" class="text-emerald-400 text-xs text-center mb-2">ကူးယူပြီးပါပြီ ✅</p>
 
             <label class="block text-gray-400 text-xs mb-2 ml-1">ပြေစာနောက် ၅ လုံး</label>
@@ -86,7 +83,6 @@
             </button>
           </div>
 
-          <!-- Close Button -->
           <button @click="close" class="absolute top-4 right-4 text-gray-400 hover:text-white">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
@@ -97,7 +93,8 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
+import { supabase } from '@/lib/supabase'
 
 const props = defineProps({ modelValue: Boolean })
 const emit = defineEmits(['update:modelValue', 'submit'])
@@ -111,23 +108,54 @@ const copied = ref(false)
 
 const amountPresets = [2000, 5000, 10000, 30000, 50000, 100000, 300000, 500000, 1000000]
 
-// Recipient details (can be dynamic later)
-const recipientName = 'Ma Khaing Zin Moe'
-const recipientAccount = '9446323509'
+// Recipient details (will be loaded from system_settings)
+const recipientName = ref('')
+const recipientAccount = ref('')
 
-// Bonus calculation (first deposit bonus 70% hardcoded for now)
-const bonusPercent = 70
-const bonusAmount = computed(() => Math.round(amount.value * bonusPercent / 100))
-const totalAmount = computed(() => amount.value + bonusAmount.value)
+// Fetch payment settings from Supabase
+async function fetchPaymentSettings() {
+  const { data, error } = await supabase
+    .from('system_settings')
+    .select('key, value')
+    .in('key', ['wave_recipient_name', 'wave_recipient_account', 'kpay_recipient_name', 'kpay_recipient_account'])
+  
+  if (data && !error) {
+    const settings = {}
+    data.forEach(row => { settings[row.key] = row.value })
+    // Update based on currently selected method
+    if (method.value === 'wave') {
+      recipientName.value = settings.wave_recipient_name || 'Ma Khaing Zin Moe'
+      recipientAccount.value = settings.wave_recipient_account || '9446323509'
+    } else {
+      recipientName.value = settings.kpay_recipient_name || 'Ma Khaing Zin Moe'
+      recipientAccount.value = settings.kpay_recipient_account || '9446323509'
+    }
+  } else {
+    // Fallback defaults
+    recipientName.value = 'Ma Khaing Zin Moe'
+    recipientAccount.value = '9446323509'
+  }
+}
 
+// Re-fetch when method changes (to update displayed details)
+watch(method, () => {
+  fetchPaymentSettings()
+})
+
+// Fetch when modal opens
 watch(() => props.modelValue, (val) => {
   visible.value = val
   if (val) {
     step.value = 1
     amount.value = 2000
     slip.value = ''
+    fetchPaymentSettings() // load latest settings
   }
 })
+
+const bonusPercent = 70
+const bonusAmount = computed(() => Math.round(amount.value * bonusPercent / 100))
+const totalAmount = computed(() => amount.value + bonusAmount.value)
 
 const close = () => {
   emit('update:modelValue', false)
