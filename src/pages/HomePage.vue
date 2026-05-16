@@ -442,15 +442,6 @@ async function doRegister() {
 const games = ref([])
 const loadingGames = ref(true)
 const fetchError = ref(null)
-async function fetchGames() {
-  loadingGames.value = true
-  fetchError.value = null
-  try {
-    const { data, error } = await supabase.from('games').select('*').eq('is_active', true).order('provider', { ascending: true })
-    if (error) throw error
-    if (data && data.length > 0) { games.value = data } else { games.value = [...DUMMY_GAMES]; addToast('Loaded demo games', 'warning') }
-  } catch (e) { console.error('Game fetch error:', e); fetchError.value = 'Failed to load games. Using demo data.'; games.value = [...DUMMY_GAMES]; addToast('Loaded demo games', 'error') } finally { loadingGames.value = false }
-}
 
 const jackpot = ref(893619157998)
 const displayedJackpot = ref('893,619,157,998')
