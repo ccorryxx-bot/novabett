@@ -1,4 +1,4 @@
-<template>
+	<template>
   <div class="min-h-screen bg-[#0b141a] text-gray-200 flex flex-col selection:bg-cyan-500/30">
     <!-- Toast Container -->
     <Teleport to="body">
@@ -130,8 +130,7 @@
             <div class="relative w-full aspect-square bg-black/20 flex items-center justify-center overflow-hidden">
               <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-teal-500/5"></div>
               <span class="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-2 py-0.5 text-[9px] font-bold text-cyan-300">{{ game.provider }}</span>
-              <span class="text-4xl opacity-20 group-hover:scale-110 transition-transform duration-500">🎰</span>
-            </div>
+<img :src="game.image_url" class="absolute inset-0 w-full h-full object-cover" alt="" />            </div>
             <div class="p-2"><h3 class="text-[11px] font-semibold leading-tight truncate text-gray-300">{{ game.name }}</h3></div>
           </div>
         </div>
