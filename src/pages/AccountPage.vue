@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-[#0b141a] text-gray-200 pb-20 relative overflow-hidden">
     <header class="sticky top-0 z-30 bg-[#0b141a]/80 backdrop-blur-lg border-b border-cyan-500/10 px-4 py-2">
-      <h2 class="text-lg font-bold text-center text-cyan-300">My Account</h2>
+      <h2 class="text-lg font-bold text-center text-cyan-300">{{ $t('profile') }}</h2>
     </header>
 
     <div class="px-4 pt-4 space-y-4 relative z-10">
@@ -9,11 +9,11 @@
       <!-- Profile Banner -->
       <div class="bg-[#111d26] border border-cyan-500/10 rounded-2xl p-4 shadow-sm">
         <div class="flex items-center gap-4">
-          <div class="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-400 to-teal-600 flex items-center justify-center text-2xl font-black text-white shadow-lg">
-            {{ username.charAt(0) }}
+          <div class="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-400 to-teal-600 flex items-center justify-center text-xl font-black text-white shadow-lg">
+            {{ username.charAt(0).toUpperCase() }}
           </div>
           <div class="flex-1">
-            <p class="text-xl font-extrabold text-white">{{ username }}</p>
+            <p class="text-lg font-extrabold text-white">{{ username }}</p>
             <p class="text-xs text-gray-400 font-mono mt-1">Game ID: {{ gameId }}</p>
             <span class="inline-flex items-center mt-2 px-3 py-1 rounded-full text-xs font-bold border"
               :class="vipBadgeClass">
@@ -53,75 +53,64 @@
       <!-- Balances -->
       <div class="grid grid-cols-2 gap-3">
         <div class="bg-[#111d26] border border-cyan-500/10 rounded-2xl p-3 text-center shadow-sm">
-          <p class="text-xs text-gray-400">Main Balance</p>
+          <p class="text-xs text-gray-400">{{ $t('mainBalance') }}</p>
           <p class="text-lg font-black text-cyan-400">{{ formatCurrency(mainBalance) }}</p>
         </div>
         <div class="bg-[#111d26] border border-cyan-500/10 rounded-2xl p-3 text-center shadow-sm">
-          <p class="text-xs text-gray-400">Bonus Balance</p>
+          <p class="text-xs text-gray-400">{{ $t('bonusBalance') }}</p>
           <p class="text-lg font-black text-cyan-300">{{ formatCurrency(bonusBalance) }}</p>
         </div>
       </div>
 
       <!-- Wagering Progress -->
       <div class="bg-[#111d26] border border-cyan-500/10 rounded-2xl p-4 shadow-sm">
-        <h3 class="text-sm font-bold text-white mb-2">Wagering Progress</h3>
+        <h3 class="text-sm font-bold text-white mb-2">{{ $t('wageringProgress') }}</h3>
         <div v-if="wageringTarget > 0">
           <div class="flex justify-between text-xs text-gray-400">
-            <span>Remaining</span>
+            <span>{{ $t('remaining') }}</span>
             <span>{{ formatCurrency(wageringRemaining) }} / {{ formatCurrency(wageringTarget) }}</span>
           </div>
           <div class="h-2 bg-gray-700 rounded-full overflow-hidden mt-1">
             <div class="h-full bg-gradient-to-r from-cyan-500 to-teal-500 rounded-full transition-all" :style="{ width: wageringPercent + '%' }"></div>
           </div>
         </div>
-        <p v-else class="text-xs text-gray-500 text-center py-2">No active wagering</p>
+        <p v-else class="text-xs text-gray-500 text-center py-2">{{ $t('noWagering') }}</p>
       </div>
 
       <!-- Quick Actions -->
       <div class="grid grid-cols-4 gap-2">
-        <button @click="$router.push('/home')" class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-2 text-center hover:bg-cyan-500/20 transition-all active:scale-95">
-          <span class="text-xl">💰</span>
-          <p class="text-[10px] font-bold text-cyan-300 mt-0.5">Deposit</p>
+        <button @click="$router.push('/home')" class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-3 text-center hover:bg-cyan-500/20 transition-all active:scale-95">
+          <!-- Deposit Icon SVG -->
+          <svg class="w-6 h-6 mx-auto text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/><circle cx="12" cy="12" r="3"/></svg>
+          <p class="text-[10px] font-bold text-cyan-300 mt-1">{{ $t('depositBtn') }}</p>
         </button>
-        <button @click="$router.push('/home')" class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-2 text-center hover:bg-cyan-500/20 transition-all active:scale-95">
-          <span class="text-xl">💸</span>
-          <p class="text-[10px] font-bold text-cyan-300 mt-0.5">Withdraw</p>
+        <button @click="$router.push('/home')" class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-3 text-center hover:bg-cyan-500/20 transition-all active:scale-95">
+          <!-- Withdraw Icon SVG -->
+          <svg class="w-6 h-6 mx-auto text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20V4m-8 8h16"/><circle cx="12" cy="12" r="3"/></svg>
+          <p class="text-[10px] font-bold text-cyan-300 mt-1">{{ $t('withdrawBtn') }}</p>
         </button>
-        <button @click="comingSoon" class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-2 text-center hover:bg-cyan-500/20 transition-all active:scale-95">
-          <span class="text-xl">📋</span>
-          <p class="text-[10px] font-bold text-cyan-300 mt-0.5">History</p>
+        <button @click="comingSoon" class="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-3 text-center hover:bg-cyan-500/20 transition-all active:scale-95">
+          <!-- History Icon SVG -->
+          <svg class="w-6 h-6 mx-auto text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <p class="text-[10px] font-bold text-cyan-300 mt-1">{{ $t('history') }}</p>
         </button>
-        <button @click="logout" class="bg-red-500/10 border border-red-500/20 rounded-xl p-2 text-center hover:bg-red-500/20 transition-all active:scale-95">
-          <span class="text-xl">🚪</span>
-          <p class="text-[10px] font-bold text-red-400 mt-0.5">Logout</p>
+        <button @click="logout" class="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-center hover:bg-red-500/20 transition-all active:scale-95">
+          <!-- Logout Icon SVG -->
+          <svg class="w-6 h-6 mx-auto text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          <p class="text-[10px] font-bold text-red-400 mt-1">{{ $t('logout') }}</p>
         </button>
       </div>
 
     </div>
 
-    <!-- Bottom Nav (SVG icons) -->
+    <!-- Bottom Nav (Same as HomePage) -->
     <nav class="fixed bottom-0 left-0 right-0 bg-[#0b141a]/95 backdrop-blur-xl border-t border-cyan-500/10 z-40">
       <div class="flex justify-around items-center py-2">
-        <router-link to="/home" class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors">
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-          <span class="text-[10px]">Home</span>
-        </router-link>
-        <router-link to="/promotions" class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors">
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 12v8H4v-8l8-8 8 8zm-2 2H6v4h12v-4zM12 2l-8 8h16l-8-8z"/></svg>
-          <span class="text-[10px]">Promos</span>
-        </router-link>
-        <router-link to="/agent" class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors">
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-          <span class="text-[10px]">Agents</span>
-        </router-link>
-        <router-link to="/service" class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors">
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-          <span class="text-[10px]">Chat</span>
-        </router-link>
-        <router-link to="/account" class="flex flex-col items-center gap-0.5 text-cyan-400 transition-colors">
-          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
-          <span class="text-[10px]">You</span>
-        </router-link>
+        <router-link to="/home" class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span class="text-[10px]">{{ $t('home') }}</span></router-link>
+        <router-link to="/promotions" class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 12v8H4v-8l8-8 8 8zm-2 2H6v4h12v-4zM12 2l-8 8h16l-8-8z"/></svg><span class="text-[10px]">{{ $t('promotions') }}</span></router-link>
+        <router-link to="/agent" class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg><span class="text-[10px]">{{ $t('agent') }}</span></router-link>
+        <router-link to="/service" class="flex flex-col items-center gap-0.5 text-gray-400 transition-colors"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><span class="text-[10px]">{{ $t('service') }}</span></router-link>
+        <router-link to="/account" class="flex flex-col items-center gap-0.5 text-cyan-400 transition-colors"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg><span class="text-[10px]">{{ $t('account') }}</span></router-link>
       </div>
     </nav>
   </div>
@@ -129,7 +118,10 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { supabase } from '@/lib/supabase'
+
+const { t } = useI18n()
 
 const username = ref(localStorage.getItem('sb_username') || 'PLAYER')
 const gameId = ref('')
@@ -170,7 +162,10 @@ async function fetchTotalDeposited(userId) {
   }
 }
 
-onMounted(fetchWallet)
+onMounted(() => {
+  fetchWallet()
+  setInterval(fetchWallet, 5000) // Auto-refresh balance every 5 seconds
+})
 
 const vipLevel = computed(() => {
   if (deposited.value >= 500000) return 10
@@ -230,15 +225,13 @@ const wageringPercent = computed(() => Math.round((wageringCompleted.value / wag
 const formatCurrency = (num) => new Intl.NumberFormat('en-US').format(num)
 
 const logout = async () => {
-  // Sign out from Supabase (clears auth session)
   await supabase.auth.signOut()
-  // Clear local storage tokens & user data
   localStorage.removeItem('sb_token')
   localStorage.removeItem('sb_refresh')
   localStorage.removeItem('sb_username')
   localStorage.removeItem('avatarIndex')
-  // Redirect to home page (full reload)
-  window.location.href = '/home'
+  window.location.href = '/login'
 }
+
 const comingSoon = () => alert('Coming Soon')
 </script>
