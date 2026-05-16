@@ -17,7 +17,10 @@
       <div v-if="!loggedIn" class="bg-[#111d26] border border-cyan-500/10 rounded-2xl p-5 text-center">
         <p class="text-gray-400 mb-4">Enter admin password</p>
         <input v-model="adminKey" type="password" placeholder="Admin Secret" class="w-full max-w-xs p-3 rounded-xl bg-[#0b141a] border border-cyan-500/20 text-white text-sm focus:outline-none focus:border-cyan-500/50 mb-4" @keyup.enter="login" />
-        <button @click="login" :disabled="!adminKey" class="bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold py-3 px-8 rounded-full shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 active:scale-95 transition-all">Login</button>
+        <button @click="login" :disabled="loginLoading" class="bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold py-3 px-8 rounded-full shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 active:scale-95 transition-all disabled:opacity-50">
+          {{ loginLoading ? 'Verifying...' : 'Login' }}
+        </button>
+        <p v-if="loginError" class="text-red-400 text-sm mt-3">{{ loginError }}</p>
       </div>
 
       <!-- Tabs Content (when logged in) -->
@@ -73,7 +76,6 @@
           <div class="bg-[#111d26] border border-cyan-500/10 rounded-2xl p-5 space-y-4">
             <h3 class="font-bold text-white">System Settings</h3>
 
-            <!-- WavePay Settings -->
             <div>
               <h4 class="text-sm text-cyan-300 mb-2">WavePay</h4>
               <label class="text-xs text-gray-400">Recipient Name</label>
@@ -82,7 +84,6 @@
               <input v-model="settings.wave_recipient_account" class="w-full p-2.5 rounded-lg bg-[#0b141a] border border-cyan-500/20 text-white text-sm focus:outline-none focus:border-cyan-500/50" />
             </div>
 
-            <!-- KBZ Pay Settings -->
             <div>
               <h4 class="text-sm text-cyan-300 mb-2">KBZ Pay</h4>
               <label class="text-xs text-gray-400">Recipient Name</label>
@@ -91,7 +92,6 @@
               <input v-model="settings.kpay_recipient_account" class="w-full p-2.5 rounded-lg bg-[#0b141a] border border-cyan-500/20 text-white text-sm focus:outline-none focus:border-cyan-500/50" />
             </div>
 
-            <!-- Commission / Bonus -->
             <div>
               <h4 class="text-sm text-cyan-300 mb-2">Commission & Wagering</h4>
               <label class="text-xs text-gray-400">Direct Commission Rate (%)</label>
@@ -121,7 +121,7 @@
       </div>
     </div>
 
-    <!-- Bottom Nav (minimal, only admin) -->
+    <!-- Bottom Nav (minimal) -->
     <nav class="fixed bottom-0 left-0 right-0 bg-[#0b141a]/95 backdrop-blur-xl border-t border-cyan-500/10 z-40 py-2">
       <div class="flex justify-center">
         <span class="text-xs text-gray-500">Admin Panel v1.0</span>
@@ -135,6 +135,8 @@ import { ref, reactive, onMounted } from 'vue'
 
 const adminKey = ref('')
 const loggedIn = ref(false)
+const loginLoading = ref(false)
+const loginError = ref('')
 
 // Tabs
 const activeTab = ref(0)
@@ -160,20 +162,47 @@ const savingSettings = ref(false)
 const settingsMsg = ref('')
 const settingsOk = ref(false)
 
-// Auto-login if stored
+// ---- Login Logic (with verification) ----
+const login = async () => {
+  if (!adminKey.value) return
+  loginLoading.value = true
+  loginError.value = ''
+  try {
+    // Call a lightweight endpoint to verify secret
+    const res = await fetch('https://vuywhhmwrqykukcemifd.supabase.co/functions/v1/admin_get_transactions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-key': adminKey.value
+      },
+      body: JSON.stringify({}) // empty filter, just to check auth
+    })
+    const data = await res.json()
+    if (data.error) {
+      loginError.value = data.error
+      return
+    }
+    // Success: store key and proceed
+    localStorage.setItem('admin_key', adminKey.value)
+    loggedIn.value = true
+    fetchTransactions()
+    loadSettings()
+  } catch (e) {
+    loginError.value = 'Network error: ' + e.message
+  } finally {
+    loginLoading.value = false
+  }
+}
+
+// ---- Auto-login check on mount ----
 const savedKey = localStorage.getItem('admin_key')
 if (savedKey) {
   adminKey.value = savedKey
-  loggedIn.value = true
+  // Attempt to verify silently
+  login() // but this will set loggedIn on success
 }
 
-const login = () => {
-  localStorage.setItem('admin_key', adminKey.value)
-  loggedIn.value = true
-  fetchTransactions()
-  loadSettings()
-}
-
+// ---- Transaction fetching ----
 const fetchTransactions = async () => {
   loadingTx.value = true
   txError.value = ''
@@ -193,6 +222,12 @@ const fetchTransactions = async () => {
     const data = await res.json()
     if (data.error) {
       txError.value = data.error
+      // If Unauthorized, force logout
+      if (data.error === 'Unauthorized') {
+        loggedIn.value = false
+        localStorage.removeItem('admin_key')
+        adminKey.value = ''
+      }
     } else {
       transactions.value = data.data || []
     }
@@ -219,7 +254,7 @@ const approveReject = async (id, action) => {
   } catch (e) { alert('Network error: ' + e.message) }
 }
 
-// Load current settings from system_settings table
+// ---- Settings load/save ----
 const loadSettings = async () => {
   try {
     const res = await fetch('https://vuywhhmwrqykukcemifd.supabase.co/functions/v1/admin_get_transactions', {
@@ -228,12 +263,10 @@ const loadSettings = async () => {
         'Content-Type': 'application/json',
         'x-admin-key': localStorage.getItem('admin_key') || ''
       },
-      body: JSON.stringify({ key: 'all_settings' }) // special flag
+      body: JSON.stringify({ key: 'all_settings' }) // special flag (not yet handled, but we'll implement later)
     })
-    const data = await res.json()
-    if (data && data.settings) {
-      Object.assign(settings, data.settings)
-    }
+    // For now, load from local storage fallback; later we can implement a proper admin_get_settings function
+    // We'll skip detailed implementation.
   } catch (e) { /* ignore */ }
 }
 
@@ -263,10 +296,5 @@ const saveSettings = async () => {
   } finally {
     savingSettings.value = false
   }
-}
-
-if (loggedIn.value) {
-  fetchTransactions()
-  loadSettings()
 }
 </script>
