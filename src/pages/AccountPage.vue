@@ -229,12 +229,16 @@ const wageringPercent = computed(() => Math.round((wageringCompleted.value / wag
 
 const formatCurrency = (num) => new Intl.NumberFormat('en-US').format(num)
 
-const logout = () => {
+const logout = async () => {
+  // Sign out from Supabase (clears auth session)
+  await supabase.auth.signOut()
+  // Clear local storage tokens & user data
   localStorage.removeItem('sb_token')
   localStorage.removeItem('sb_refresh')
   localStorage.removeItem('sb_username')
-  window.location.href = '/login'
+  localStorage.removeItem('avatarIndex')
+  // Redirect to home page (full reload)
+  window.location.href = '/home'
 }
-
 const comingSoon = () => alert('Coming Soon')
 </script>
