@@ -1,4 +1,4 @@
-	<template>
+<template>
   <div class="min-h-screen bg-[#0b141a] text-gray-200 flex flex-col selection:bg-cyan-500/30">
     <!-- Toast Container -->
     <Teleport to="body">
@@ -72,9 +72,13 @@
               </p>
             </div>
           </div>
-          <div class="flex gap-2">
-            <button @click="showDepositModal = true" class="relative overflow-hidden bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold rounded-full shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 text-xs py-2 px-4">Deposit</button>
-            <button @click="showWithdrawModal = true" class="bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 font-bold rounded-full border border-cyan-500/30 active:scale-95 transition-all text-xs py-2 px-4">Withdraw</button>
+          <div class="flex flex-col items-center gap-2">
+            <!-- Payment Methods Badge -->
+            <img src="/images/kpay_wavepay.png" alt="KPay & WavePay" class="h-5 object-contain" />
+            <div class="flex gap-2">
+              <button @click="showDepositModal = true" class="relative overflow-hidden bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold rounded-full shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 text-xs py-2 px-4">Deposit</button>
+              <button @click="showWithdrawModal = true" class="bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 font-bold rounded-full border border-cyan-500/30 active:scale-95 transition-all text-xs py-2 px-4">Withdraw</button>
+            </div>
           </div>
         </div>
 
@@ -85,13 +89,13 @@
         </div>
       </div>
 
-      <!-- Carousel with FIXED image display -->
+      <!-- Carousel with brighter images (reduced overlay) -->
       <div class="px-4 pt-4">
         <div class="rounded-2xl overflow-hidden relative h-40 bg-[#111d26] border border-cyan-500/10 shadow-sm">
           <div class="absolute inset-0 flex transition-transform duration-500" :style="{ transform: `translateX(-${carouselIndex * 100}%)` }">
             <div v-for="(img, i) in carouselImages" :key="i" class="w-full h-full flex-shrink-0 relative">
-              <img :src="img.image" class="w-full h-full object-cover" alt="" />
-              <div class="absolute inset-0 bg-black/40"></div>
+              <img :src="img.image" class="w-full h-full object-cover brightness-110" alt="" />
+              <div class="absolute inset-0 bg-black/20"></div> <!-- Reduced overlay from 40 to 20 -->
             </div>
           </div>
           <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
@@ -130,7 +134,8 @@
             <div class="relative w-full aspect-square bg-black/20 flex items-center justify-center overflow-hidden">
               <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-teal-500/5"></div>
               <span class="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-full px-2 py-0.5 text-[9px] font-bold text-cyan-300">{{ game.provider }}</span>
-<img :src="game.image_url" class="absolute inset-0 w-full h-full object-cover" alt="" />            </div>
+              <img :src="game.image_url" class="absolute inset-0 w-full h-full object-cover" alt="" />
+            </div>
             <div class="p-2"><h3 class="text-[11px] font-semibold leading-tight truncate text-gray-300">{{ game.name }}</h3></div>
           </div>
         </div>
@@ -193,141 +198,108 @@
       </div>
     </nav>
 
-<!-- ===== AUTH MODAL (Premium SVG + Eye Toggle + Age) ===== -->
-<Teleport to="body">
-  <Transition name="modal">
-    <div v-if="showAuthModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md" @click.self="showAuthModal = false">
-      <div class="bg-[#0a1219] border border-cyan-500/30 rounded-3xl w-full max-w-xs p-5 shadow-2xl shadow-cyan-500/10 animate-slide-up">
-        <div class="text-center mb-6">
-          <h2 class="text-2xl font-black bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">NovaBETT</h2>
-          <p class="text-[10px] text-gray-500 mt-1">Premium Online Casino</p>
-        </div>
-
-        <!-- Tabs -->
-        <div class="flex mb-6">
-          <button @click="authTab = 'login'"
-            class="flex-1 py-2 rounded-l-full text-xs font-bold transition-all duration-300"
-            :class="authTab === 'login' ? 'bg-gradient-to-r from-cyan-500 to-teal-600 text-white shadow-lg' : 'bg-cyan-500/5 text-gray-400'">
-            Login
-          </button>
-          <button @click="authTab = 'register'"
-            class="flex-1 py-2 rounded-r-full text-xs font-bold transition-all duration-300"
-            :class="authTab === 'register' ? 'bg-gradient-to-r from-cyan-500 to-teal-600 text-white shadow-lg' : 'bg-cyan-500/5 text-gray-400'">
-            Register
-          </button>
-        </div>
-
-        <!-- Login Form -->
-        <div v-if="authTab === 'login'" class="space-y-4">
-          <!-- Username -->
-          <div>
-            <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Username</label>
-            <div class="relative">
-              <!-- User Icon SVG -->
-              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-              <input v-model="loginUsername" type="text" placeholder="ကျေးဇူးပြု၍ဝင်ပါ အကောက်!"
-                class="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[#111d26] border text-white text-sm placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors"
-                :class="loginUsernameValid ? 'border-cyan-500' : 'border-gray-700'"
-                @input="loginUsername = loginUsername.toUpperCase()" />
+    <!-- ===== AUTH MODAL (Premium SVG + Eye Toggle + Age) ===== -->
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showAuthModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md" @click.self="showAuthModal = false">
+          <div class="bg-[#0a1219] border border-cyan-500/30 rounded-3xl w-full max-w-xs p-5 shadow-2xl shadow-cyan-500/10 animate-slide-up">
+            <div class="text-center mb-6">
+              <h2 class="text-2xl font-black bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">NovaBETT</h2>
+              <p class="text-[10px] text-gray-500 mt-1">Premium Online Casino</p>
             </div>
-          </div>
-          <!-- Password -->
-          <div>
-            <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Password</label>
-            <div class="relative">
-              <!-- Lock Icon SVG -->
-              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-              <input v-model="loginPassword" :type="loginShowPassword ? 'text' : 'password'" placeholder="စကားဝှက်ထည့်ပါ!"
-                class="w-full pl-10 pr-12 py-2.5 rounded-lg bg-[#111d26] border text-white text-sm placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors"
-                :class="loginPasswordValid ? 'border-cyan-500' : 'border-gray-700'" />
-              <!-- Eye Toggle SVG -->
-              <button @click="loginShowPassword = !loginShowPassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors">
-                <svg v-if="!loginShowPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243"/></svg>
-                <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            <!-- Tabs -->
+            <div class="flex mb-6">
+              <button @click="authTab = 'login'"
+                class="flex-1 py-2 rounded-l-full text-xs font-bold transition-all duration-300"
+                :class="authTab === 'login' ? 'bg-gradient-to-r from-cyan-500 to-teal-600 text-white shadow-lg' : 'bg-cyan-500/5 text-gray-400'">Login</button>
+              <button @click="authTab = 'register'"
+                class="flex-1 py-2 rounded-r-full text-xs font-bold transition-all duration-300"
+                :class="authTab === 'register' ? 'bg-gradient-to-r from-cyan-500 to-teal-600 text-white shadow-lg' : 'bg-cyan-500/5 text-gray-400'">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <div v-if="authTab === 'login'" class="space-y-4">
+              <div>
+                <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Username</label>
+                <div class="relative">
+                  <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                  <input v-model="loginUsername" type="text" placeholder="ကျေးဇူးပြု၍ဝင်ပါ အကောက်!" class="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[#111d26] border text-white text-sm placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors" :class="loginUsernameValid ? 'border-cyan-500' : 'border-gray-700'" @input="loginUsername = loginUsername.toUpperCase()" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Password</label>
+                <div class="relative">
+                  <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                  <input v-model="loginPassword" :type="loginShowPassword ? 'text' : 'password'" placeholder="စကားဝှက်ထည့်ပါ!" class="w-full pl-10 pr-12 py-2.5 rounded-lg bg-[#111d26] border text-white text-sm placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors" :class="loginPasswordValid ? 'border-cyan-500' : 'border-gray-700'" />
+                  <button @click="loginShowPassword = !loginShowPassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors">
+                    <svg v-if="!loginShowPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243"/></svg>
+                    <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                  </button>
+                </div>
+              </div>
+              <button @click="doLogin" :disabled="loginLoading || !loginUsernameValid || !loginPasswordValid" class="w-full relative overflow-hidden bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold rounded-full shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                <span v-if="loginLoading" class="flex items-center justify-center gap-2"><svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Signing In...</span>
+                <span v-else>Sign In</span>
               </button>
+              <p class="text-red-400 text-sm text-center">{{ loginError }}</p>
             </div>
-          </div>
-          <button @click="doLogin" :disabled="loginLoading || !loginUsernameValid || !loginPasswordValid"
-            class="w-full relative overflow-hidden bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold rounded-full shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
-            <span v-if="loginLoading" class="flex items-center justify-center gap-2">
-              <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-              Signing In...
-            </span>
-            <span v-else>Sign In</span>
-          </button>
-          <p class="text-red-400 text-sm text-center">{{ loginError }}</p>
-        </div>
 
-        <!-- Register Form -->
-        <div v-else class="space-y-4">
-          <!-- Username -->
-          <div>
-            <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Username</label>
-            <div class="relative">
-              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-              <input v-model="regUsername" type="text" placeholder="ကျေးဇူးပြု၍ဝင်ပါ အကောက်!"
-                class="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[#111d26] border text-white text-sm placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors"
-                :class="regUsernameValid ? 'border-cyan-500' : 'border-gray-700'"
-                @input="regUsername = regUsername.toUpperCase()" />
-            </div>
-            <p class="text-[10px] text-gray-500 mt-1 ml-1">e.g. MOEMOE</p>
-          </div>
-          <!-- Password -->
-          <div>
-            <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Password</label>
-            <div class="relative">
-              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-              <input v-model="regPassword" :type="regShowPassword ? 'text' : 'password'" placeholder="စကားဝှက်ထည့်ပါ!"
-                class="w-full pl-10 pr-12 py-2.5 rounded-lg bg-[#111d26] border text-white text-sm placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors"
-                :class="regPasswordValid ? 'border-cyan-500' : 'border-gray-700'" />
-              <button @click="regShowPassword = !regShowPassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors">
-                <svg v-if="!regShowPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243"/></svg>
-                <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            <!-- Register Form -->
+            <div v-else class="space-y-4">
+              <div>
+                <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Username</label>
+                <div class="relative">
+                  <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                  <input v-model="regUsername" type="text" placeholder="ကျေးဇူးပြု၍ဝင်ပါ အကောက်!" class="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[#111d26] border text-white text-sm placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors" :class="regUsernameValid ? 'border-cyan-500' : 'border-gray-700'" @input="regUsername = regUsername.toUpperCase()" />
+                </div>
+                <p class="text-[10px] text-gray-500 mt-1 ml-1">e.g. MOEMOE</p>
+              </div>
+              <div>
+                <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Password</label>
+                <div class="relative">
+                  <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                  <input v-model="regPassword" :type="regShowPassword ? 'text' : 'password'" placeholder="စကားဝှက်ထည့်ပါ!" class="w-full pl-10 pr-12 py-2.5 rounded-lg bg-[#111d26] border text-white text-sm placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors" :class="regPasswordValid ? 'border-cyan-500' : 'border-gray-700'" />
+                  <button @click="regShowPassword = !regShowPassword" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors">
+                    <svg v-if="!regShowPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243"/></svg>
+                    <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                  </button>
+                </div>
+                <!-- Strength Meter -->
+                <div class="mt-2 flex gap-1 px-1">
+                  <div v-for="n in 3" :key="n" class="h-1.5 flex-1 rounded-full transition-all duration-300" :class="strengthBarClass(n)"></div>
+                </div>
+                <p class="text-[10px] ml-1 transition-colors duration-300" :class="strengthTextColor">{{ strengthLabel }}</p>
+                <p class="text-[10px] text-gray-500 mt-1 ml-1">e.g. moe#223</p>
+              </div>
+              <div>
+                <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Phone Number</label>
+                <div class="flex items-center bg-[#111d26] rounded-lg border border-gray-700 focus-within:border-cyan-500 transition-colors">
+                  <span class="pl-3 pr-2 text-white text-sm">🇲🇲 +95</span>
+                  <input v-model="regPhone" type="tel" placeholder="ကျေးဇူးပြု၍ဖုန်းနံပါတ်ထည့်ပါ!" class="flex-1 p-2.5 bg-transparent text-white text-sm focus:outline-none placeholder-gray-500" :class="regPhoneValid ? 'border-cyan-500' : 'border-gray-700'" />
+                </div>
+                <p class="text-[10px] text-gray-500 mt-1 ml-1">e.g. 09123456789</p>
+              </div>
+              <!-- Age Confirmation -->
+              <div class="flex items-start gap-2 mt-1">
+                <div class="w-5 h-5 mt-0.5 flex-shrink-0 relative">
+                  <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
+                </div>
+                <p class="text-xs text-gray-400 leading-relaxed">ကျွန်ုပ်သည် အသက် ၁၈ နှစ်ကျော်ပြီးဖြစ်ပါသည်။</p>
+              </div>
+              <button @click="doRegister" :disabled="regLoading || !regUsernameValid || !regPasswordValid || !regPhoneValid" class="w-full relative overflow-hidden bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold rounded-full shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                <span v-if="regLoading" class="flex items-center justify-center gap-2"><svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Creating...</span>
+                <span v-else>Join NovaBETT</span>
               </button>
+              <p class="text-red-400 text-sm text-center">{{ regError }}</p>
             </div>
-            <!-- Strength Meter -->
-            <div class="mt-2 flex gap-1 px-1">
-              <div v-for="n in 3" :key="n" class="h-1.5 flex-1 rounded-full transition-all duration-300" :class="strengthBarClass(n)"></div>
-            </div>
-            <p class="text-[10px] ml-1 transition-colors duration-300" :class="strengthTextColor">{{ strengthLabel }}</p>
-            <p class="text-[10px] text-gray-500 mt-1 ml-1">e.g. moe#223</p>
-          </div>
-          <!-- Phone Number -->
-          <div>
-            <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Phone Number</label>
-            <div class="flex items-center bg-[#111d26] rounded-lg border border-gray-700 focus-within:border-cyan-500 transition-colors">
-              <span class="pl-3 pr-2 text-white text-sm">🇲🇲 +95</span>
-              <input v-model="regPhone" type="tel" placeholder="ကျေးဇူးပြု၍ဖုန်းနံပါတ်ထည့်ပါ!"
-                class="flex-1 p-2.5 bg-transparent text-white text-sm focus:outline-none placeholder-gray-500"
-                :class="regPhoneValid ? 'border-cyan-500' : 'border-gray-700'" />
-            </div>
-            <p class="text-[10px] text-gray-500 mt-1 ml-1">e.g. 09123456789</p>
-          </div>
-          <!-- Age Confirmation (Auto-checked, read-only) -->
-          <div class="flex items-start gap-2 mt-1">
-            <div class="w-5 h-5 mt-0.5 flex-shrink-0 relative">
-              <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>
-            </div>
-            <p class="text-xs text-gray-400 leading-relaxed">ကျွန်ုပ်သည် အသက် ၁၈ နှစ်ကျော်ပြီးဖြစ်ပါသည်။</p>
-          </div>
-          <button @click="doRegister" :disabled="regLoading || !regUsernameValid || !regPasswordValid || !regPhoneValid"
-            class="w-full relative overflow-hidden bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold rounded-full shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
-            <span v-if="regLoading" class="flex items-center justify-center gap-2">
-              <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-              Creating...
-            </span>
-            <span v-else>Join NovaBETT</span>
-          </button>
-          <p class="text-red-400 text-sm text-center">{{ regError }}</p>
-        </div>
 
-        <button @click="showAuthModal = false" class="absolute top-3 right-3 text-gray-500 hover:text-white transition-colors">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-      </div>
-    </div>
-  </Transition>
-</Teleport>
+            <button @click="showAuthModal = false" class="absolute top-3 right-3 text-gray-500 hover:text-white transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
 
     <!-- Footer Modals -->
     <Teleport to="body">
@@ -343,6 +315,7 @@
       </Transition>
     </Teleport>
 
+    <!-- Deposit/Withdraw Modals -->
     <DepositModal v-model="showDepositModal" @submit="handleDepositSubmit" />
     <WithdrawModal v-model="showWithdrawModal" :balance="mainBalance" @submit="handleWithdrawSubmit" />
   </div>
@@ -356,28 +329,6 @@ import { supabase } from '@/lib/supabase'
 import DepositModal from '@/components/DepositModal.vue'
 import WithdrawModal from '@/components/WithdrawModal.vue'
 
-async function fetchGames() {
-  loadingGames.value = true
-  fetchError.value = null
-  console.log('Fetching games from Supabase...')
-  try {
-    const { data, error } = await supabase
-      .from('games')
-      .select('*')
-      .eq('is_active', true)
-      .order('provider', { ascending: true })
-    if (error) throw error
-    games.value = data || []
-    console.log('Games loaded:', games.value.length)
-    addToast(`Loaded ${games.value.length} games`, 'success')
-  } catch (e) {
-    console.error('Game fetch error:', e)
-    fetchError.value = 'Failed to load games.'
-    addToast('Failed to load games', 'error')
-  } finally {
-    loadingGames.value = false
-  }
-}
 const route = useRoute()
 const { locale } = useI18n()
 const currentLang = ref(locale.value)
@@ -387,15 +338,29 @@ const toggleLanguage = () => {
   localStorage.setItem('lang', locale.value)
 }
 
+// Auth state
 const isLoggedIn = ref(false)
 const username = ref('')
 const mainBalance = ref(0)
 const balanceLoading = ref(false)
+
+// Avatar random colors
+const avatarColors = [
+  'linear-gradient(135deg, #f6d365, #fda085)',
+  'linear-gradient(135deg, #a1c4fd, #c2e9fb)',
+  'linear-gradient(135deg, #ffecd2, #fcb69f)',
+  'linear-gradient(135deg, #a18cd1, #fbc2eb)',
+  'linear-gradient(135deg, #84fab0, #8fd3f4)'
+]
+const avatarColor = ref(avatarColors[0])
+
+// Auth modal
 const showAuthModal = ref(false)
 const authTab = ref('login')
-// Password visibility toggles
 const loginShowPassword = ref(false)
 const regShowPassword = ref(false)
+
+// Toast system
 const toasts = ref([])
 let toastId = 0
 const addToast = (message, type = 'success') => {
@@ -414,10 +379,19 @@ onMounted(async () => {
   const { data: { session } } = await supabase.auth.getSession()
   if (session) {
     await loadUserInfo()
-    if (!username.value) { const saved = localStorage.getItem('sb_username'); if (saved) username.value = saved }
+    if (!username.value) {
+      const saved = localStorage.getItem('sb_username')
+      if (saved) username.value = saved
+    }
   }
   const savedLang = localStorage.getItem('lang')
   if (savedLang) { locale.value = savedLang; currentLang.value = savedLang }
+  let storedAvatar = localStorage.getItem('avatarIndex')
+  if (storedAvatar === null) {
+    storedAvatar = Math.floor(Math.random() * avatarColors.length)
+    localStorage.setItem('avatarIndex', storedAvatar)
+  }
+  avatarColor.value = avatarColors[storedAvatar]
   fetchGames()
 })
 
@@ -440,12 +414,14 @@ async function fetchBalance() {
   } catch (e) { console.error(e) } finally { balanceLoading.value = false }
 }
 
+// Form validation
 const loginUsernameValid = computed(() => loginUsername.value.trim().length > 0)
 const loginPasswordValid = computed(() => loginPassword.value.length > 0)
 const regUsernameValid = computed(() => regUsername.value.trim().length > 0)
 const regPasswordValid = computed(() => regPassword.value.length >= 3)
 const regPhoneValid = computed(() => regPhone.value.trim().length >= 6)
 
+// Login
 const loginUsername = ref('')
 const loginPassword = ref('')
 const loginLoading = ref(false)
@@ -466,50 +442,10 @@ async function doLogin() {
   } catch (e) { loginError.value = e.message; addToast(e.message, 'error') } finally { loginLoading.value = false }
 }
 
+// Register
 const regUsername = ref('')
 const regPhone = ref('')
 const regPassword = ref('')
-// Password strength logic
-const strengthLevel = computed(() => {
-  const p = regPassword.value
-  if (p.length === 0) return 0
-  let score = 0
-  if (p.length >= 6) score++
-  if (p.length >= 8) score++
-  if (/[A-Z]/.test(p)) score++
-  if (/[0-9]/.test(p)) score++
-  if (/[^A-Za-z0-9]/.test(p)) score++
-  if (score <= 1) return 1
-  if (score <= 3) return 2
-  return 3
-})
-
-const strengthLabel = computed(() => {
-  switch (strengthLevel.value) {
-    case 1: return 'Weak'
-    case 2: return 'Medium'
-    case 3: return 'Strong'
-    default: return ''
-  }
-})
-
-const strengthTextColor = computed(() => {
-  switch (strengthLevel.value) {
-    case 1: return 'text-red-400'
-    case 2: return 'text-orange-400'
-    case 3: return 'text-green-400'
-    default: return 'text-gray-400'
-  }
-})
-
-function strengthBarClass(index) {
-  if (strengthLevel.value >= index) {
-    if (strengthLevel.value === 1) return 'bg-red-500'
-    if (strengthLevel.value === 2) return 'bg-orange-500'
-    return 'bg-green-500'
-  }
-  return 'bg-gray-600'
-}
 const regLoading = ref(false)
 const regError = ref('')
 async function doRegister() {
@@ -536,10 +472,69 @@ async function doRegister() {
   } catch (e) { regError.value = e.message; addToast(e.message, 'error') } finally { regLoading.value = false }
 }
 
+// Password strength logic
+const strengthLevel = computed(() => {
+  const p = regPassword.value
+  if (p.length === 0) return 0
+  let score = 0
+  if (p.length >= 6) score++
+  if (p.length >= 8) score++
+  if (/[A-Z]/.test(p)) score++
+  if (/[0-9]/.test(p)) score++
+  if (/[^A-Za-z0-9]/.test(p)) score++
+  if (score <= 1) return 1
+  if (score <= 3) return 2
+  return 3
+})
+const strengthLabel = computed(() => {
+  switch (strengthLevel.value) {
+    case 1: return 'Weak'
+    case 2: return 'Medium'
+    case 3: return 'Strong'
+    default: return ''
+  }
+})
+const strengthTextColor = computed(() => {
+  switch (strengthLevel.value) {
+    case 1: return 'text-red-400'
+    case 2: return 'text-orange-400'
+    case 3: return 'text-green-400'
+    default: return 'text-gray-400'
+  }
+})
+function strengthBarClass(index) {
+  if (strengthLevel.value >= index) {
+    if (strengthLevel.value === 1) return 'bg-red-500'
+    if (strengthLevel.value === 2) return 'bg-orange-500'
+    return 'bg-green-500'
+  }
+  return 'bg-gray-600'
+}
+
+// Games fetch (only one)
 const games = ref([])
 const loadingGames = ref(true)
 const fetchError = ref(null)
+async function fetchGames() {
+  loadingGames.value = true
+  fetchError.value = null
+  console.log('Fetching games from Supabase...')
+  try {
+    const { data, error } = await supabase.from('games').select('*').eq('is_active', true).order('provider', { ascending: true })
+    if (error) throw error
+    games.value = data || []
+    console.log('Games loaded:', games.value.length)
+    addToast(`Loaded ${games.value.length} games`, 'success')
+  } catch (e) {
+    console.error('Game fetch error:', e)
+    fetchError.value = 'Failed to load games.'
+    addToast('Failed to load games', 'error')
+  } finally {
+    loadingGames.value = false
+  }
+}
 
+// Jackpot (animated counter)
 const jackpot = ref(893619157998)
 const displayedJackpot = ref('893,619,157,998')
 const formatNumber = (num) => new Intl.NumberFormat('en-US').format(num)
@@ -558,6 +553,7 @@ function animateValue(start, end) {
 }
 const formatCurrency = (num) => new Intl.NumberFormat('en-US').format(num)
 
+// Carousel
 const carouselImages = [
   { image: '/images/banners/banner1.jpg', title: 'SLOT GAMES' },
   { image: '/images/banners/banner2.jpg', title: 'FISHING' },
@@ -572,12 +568,20 @@ const prevSlide = () => { carouselIndex.value = carouselIndex.value === 0 ? caro
 const nextSlide = () => { carouselIndex.value = (carouselIndex.value + 1) % carouselImages.length; resetTimer() }
 const resetTimer = () => { clearInterval(carouselTimer); carouselTimer = setInterval(() => nextSlide(), 4000) }
 
+// Search
 const searchVisible = ref(false)
 const searchQuery = ref('')
 const toggleSearch = () => { searchVisible.value = !searchVisible.value }
 
+// Categories
 const categories = ref([
-  { name: 'All', logo: null }, { name: 'JILI', logo: '/images/providers/logo1.jpg' }, { name: 'PP', logo: '/images/providers/logo2.jpg' }, { name: 'PG', logo: '/images/providers/logo3.jpg' }, { name: 'Pragmatic', logo: '/images/providers/logo4.jpg' }, { name: 'Live', logo: '/images/providers/logo5.jpg' }, { name: 'Fishing', logo: '/images/providers/logo6.jpg' }
+  { name: 'All', logo: null },
+  { name: 'JILI', logo: '/images/providers/logo1.jpg' },
+  { name: 'PP', logo: '/images/providers/logo2.jpg' },
+  { name: 'PG', logo: '/images/providers/logo3.jpg' },
+  { name: 'Pragmatic', logo: '/images/providers/logo4.jpg' },
+  { name: 'Live', logo: '/images/providers/logo5.jpg' },
+  { name: 'Fishing', logo: '/images/providers/logo6.jpg' }
 ])
 const activeCategory = ref('All')
 const filteredGames = computed(() => {
@@ -588,11 +592,13 @@ const filteredGames = computed(() => {
 })
 const openGame = (game) => alert(`Opening ${game.name}`)
 
+// Deposit / Withdraw
 const showDepositModal = ref(false)
 const showWithdrawModal = ref(false)
 const handleDepositSubmit = (data) => { addToast('Deposit request submitted!', 'success') }
 const handleWithdrawSubmit = (data) => { addToast('Withdrawal request submitted!', 'success') }
 
+// Footer modals
 const footerModal = ref(null)
 const footerModalTitle = computed(() => ({ team: 'NovaBETT Team', terms: 'Terms of Service', plus18: '18+ Responsible Gaming' }[footerModal.value] || ''))
 const footerModalContent = computed(() => ({ team: 'We are a passionate team...', terms: 'Please read our terms...', plus18: 'You must be 18+ to play.' }[footerModal.value] || ''))
