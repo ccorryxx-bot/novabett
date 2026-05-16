@@ -89,13 +89,13 @@
         </div>
       </div>
 
-      <!-- Carousel with brighter images (reduced overlay) -->
+      <!-- Carousel -->
       <div class="px-4 pt-4">
         <div class="rounded-2xl overflow-hidden relative h-40 bg-[#111d26] border border-cyan-500/10 shadow-sm">
           <div class="absolute inset-0 flex transition-transform duration-500" :style="{ transform: `translateX(-${carouselIndex * 100}%)` }">
             <div v-for="(img, i) in carouselImages" :key="i" class="w-full h-full flex-shrink-0 relative">
               <img :src="img.image" class="w-full h-full object-cover brightness-110" alt="" />
-              <div class="absolute inset-0 bg-black/20"></div> <!-- Reduced overlay from 40 to 20 -->
+              <div class="absolute inset-0 bg-black/20"></div>
             </div>
           </div>
           <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
@@ -518,12 +518,10 @@ const fetchError = ref(null)
 async function fetchGames() {
   loadingGames.value = true
   fetchError.value = null
-  console.log('Fetching games from Supabase...')
   try {
     const { data, error } = await supabase.from('games').select('*').eq('is_active', true).order('provider', { ascending: true })
     if (error) throw error
     games.value = data || []
-    console.log('Games loaded:', games.value.length)
     addToast(`Loaded ${games.value.length} games`, 'success')
   } catch (e) {
     console.error('Game fetch error:', e)
@@ -592,11 +590,60 @@ const filteredGames = computed(() => {
 })
 const openGame = (game) => alert(`Opening ${game.name}`)
 
-// Deposit / Withdraw
+// Deposit / Withdraw (Real Edge Function Calls)
 const showDepositModal = ref(false)
 const showWithdrawModal = ref(false)
-const handleDepositSubmit = (data) => { addToast('Deposit request submitted!', 'success') }
-const handleWithdrawSubmit = (data) => { addToast('Withdrawal request submitted!', 'success') }
+
+const handleDepositSubmit = async (data) => {
+  try {
+    const token = (await supabase.auth.getSession()).data.session?.access_token
+    if (!token) { addToast('Please login first', 'error'); return }
+    const res = await fetch('https://vuywhhmwrqykukcemifd.supabase.co/functions/v1/deposit', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        method: data.method,
+        amount: data.amount,
+        slip: data.slip
+      })
+    })
+    const result = await res.json()
+    if (result.error) throw new Error(result.error)
+    addToast('Deposit request submitted! Pending admin approval.', 'success')
+    setTimeout(() => fetchBalance(), 2000)
+  } catch (e) {
+    addToast('Deposit failed: ' + e.message, 'error')
+  }
+}
+
+const handleWithdrawSubmit = async (data) => {
+  try {
+    const token = (await supabase.auth.getSession()).data.session?.access_token
+    if (!token) { addToast('Please login first', 'error'); return }
+    const res = await fetch('https://vuywhhmwrqykukcemifd.supabase.co/functions/v1/withdraw', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        method: data.method,
+        phone: data.phone,
+        accountName: data.accountName,
+        amount: data.amount
+      })
+    })
+    const result = await res.json()
+    if (result.error) throw new Error(result.error)
+    addToast('Withdrawal request submitted! Pending admin approval.', 'success')
+    setTimeout(() => fetchBalance(), 2000)
+  } catch (e) {
+    addToast('Withdrawal failed: ' + e.message, 'error')
+  }
+}
 
 // Footer modals
 const footerModal = ref(null)
