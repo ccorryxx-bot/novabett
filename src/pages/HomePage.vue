@@ -193,87 +193,107 @@
       </div>
     </nav>
 
-    <!-- AUTH MODAL -->
-    <Teleport to="body">
-      <Transition name="modal">
-        <div v-if="showAuthModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md" @click.self="showAuthModal = false">
-          <div class="bg-[#0a1219] border border-cyan-500/30 rounded-3xl w-full max-w-xs p-5 shadow-2xl shadow-cyan-500/10 animate-slide-up">
-            <div class="text-center mb-6">
-              <h2 class="text-2xl font-black bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">NovaBETT</h2>
-              <p class="text-[10px] text-gray-500 mt-1">Premium Online Casino</p>
-            </div>
-            <div class="flex mb-6">
-              <button @click="authTab = 'login'"
-                class="flex-1 py-2 rounded-l-full text-xs font-bold transition-all duration-300"
-                :class="authTab === 'login' ? 'bg-gradient-to-r from-cyan-500 to-teal-600 text-white shadow-lg' : 'bg-cyan-500/5 text-gray-400'">Login</button>
-              <button @click="authTab = 'register'"
-                class="flex-1 py-2 rounded-r-full text-xs font-bold transition-all duration-300"
-                :class="authTab === 'register' ? 'bg-gradient-to-r from-cyan-500 to-teal-600 text-white shadow-lg' : 'bg-cyan-500/5 text-gray-400'">Register</button>
-            </div>
-            <div v-if="authTab === 'login'" class="space-y-4">
-              <div>
-                <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Username</label>
-                <input v-model="loginUsername" type="text"
-                  class="w-full p-2.5 rounded-lg bg-[#111d26] border text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
-                  :class="loginUsernameValid ? 'border-cyan-500' : 'border-gray-700'"
-                  @input="loginUsername = loginUsername.toUpperCase()" />
-                <p v-if="loginUsername && !loginUsernameValid" class="text-red-400 text-[10px] mt-1">Username required</p>
-              </div>
-              <div>
-                <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Password</label>
-                <input v-model="loginPassword" type="password"
-                  class="w-full p-2.5 rounded-lg bg-[#111d26] border text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
-                  :class="loginPasswordValid ? 'border-cyan-500' : 'border-gray-700'" />
-                <p v-if="loginPassword && !loginPasswordValid" class="text-red-400 text-[10px] mt-1">Password required</p>
-              </div>
-              <button @click="doLogin" :disabled="loginLoading || !loginUsernameValid || !loginPasswordValid"
-                class="w-full relative overflow-hidden bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold rounded-full shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
-                <span v-if="loginLoading" class="flex items-center justify-center gap-2">
-                  <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                  Signing In...
-                </span>
-                <span v-else>Sign In</span>
-              </button>
-            </div>
-            <div v-else class="space-y-4">
-              <div>
-                <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Username</label>
-                <input v-model="regUsername" type="text"
-                  class="w-full p-2.5 rounded-lg bg-[#111d26] border text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
-                  :class="regUsernameValid ? 'border-cyan-500' : 'border-gray-700'"
-                  @input="regUsername = regUsername.toUpperCase()" />
-                <p class="text-[10px] text-gray-500 mt-1">e.g. MOEMOE</p>
-              </div>
-              <div>
-                <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Password</label>
-                <input v-model="regPassword" type="password"
-                  class="w-full p-2.5 rounded-lg bg-[#111d26] border text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
-                  :class="regPasswordValid ? 'border-cyan-500' : 'border-gray-700'" />
-                <p class="text-[10px] text-gray-500 mt-1">e.g. moe#223</p>
-              </div>
-              <div>
-                <label class="block text-gray-400 text-[10px] font-semibold mb-1 ml-1">Phone Number</label>
-                <input v-model="regPhone" type="tel"
-                  class="w-full p-2.5 rounded-lg bg-[#111d26] border text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
-                  :class="regPhoneValid ? 'border-cyan-500' : 'border-gray-700'" />
-                <p class="text-[10px] text-gray-500 mt-1">e.g. 09123456789</p>
-              </div>
-              <button @click="doRegister" :disabled="regLoading || !regUsernameValid || !regPasswordValid || !regPhoneValid"
-                class="w-full relative overflow-hidden bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold rounded-full shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
-                <span v-if="regLoading" class="flex items-center justify-center gap-2">
-                  <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                  Creating...
-                </span>
-                <span v-else>Join NovaBETT</span>
-              </button>
-            </div>
-            <button @click="showAuthModal = false" class="absolute top-3 right-3 text-gray-500 hover:text-white transition-colors">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-          </div>
+<!-- ===== AUTH MODAL (Luxury + Validation) ===== -->
+<Teleport to="body">
+  <Transition name="modal">
+    <div v-if="showAuthModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md" @click.self="showAuthModal = false">
+      <div class="bg-[#0a1219] border border-cyan-500/30 rounded-3xl w-full max-w-xs p-5 shadow-2xl shadow-cyan-500/10 animate-slide-up">
+        <div class="text-center mb-6">
+          <h2 class="text-2xl font-black bg-gradient-to-r from-cyan-400 to-teal-400 bg-clip-text text-transparent">NovaBETT</h2>
+          <p class="text-[10px] text-gray-500 mt-1">Premium Online Casino</p>
         </div>
-      </Transition>
-    </Teleport>
+
+        <!-- Tabs -->
+        <div class="flex mb-6">
+          <button @click="authTab = 'login'"
+            class="flex-1 py-2 rounded-l-full text-xs font-bold transition-all duration-300"
+            :class="authTab === 'login' ? 'bg-gradient-to-r from-cyan-500 to-teal-600 text-white shadow-lg' : 'bg-cyan-500/5 text-gray-400'">
+            Login
+          </button>
+          <button @click="authTab = 'register'"
+            class="flex-1 py-2 rounded-r-full text-xs font-bold transition-all duration-300"
+            :class="authTab === 'register' ? 'bg-gradient-to-r from-cyan-500 to-teal-600 text-white shadow-lg' : 'bg-cyan-500/5 text-gray-400'">
+            Register
+          </button>
+        </div>
+
+        <!-- Login Form -->
+        <div v-if="authTab === 'login'" class="space-y-4">
+          <div>
+            <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Username</label>
+            <input v-model="loginUsername" type="text"
+              class="w-full p-2.5 rounded-lg bg-[#111d26] border text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
+              :class="loginUsernameValid ? 'border-cyan-500' : 'border-gray-700'"
+              @input="loginUsername = loginUsername.toUpperCase()" />
+          </div>
+          <div>
+            <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Password</label>
+            <input v-model="loginPassword" type="password"
+              class="w-full p-2.5 rounded-lg bg-[#111d26] border text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
+              :class="loginPasswordValid ? 'border-cyan-500' : 'border-gray-700'" />
+          </div>
+          <button @click="doLogin" :disabled="loginLoading || !loginUsernameValid || !loginPasswordValid"
+            class="w-full relative overflow-hidden bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold rounded-full shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+            <span v-if="loginLoading" class="flex items-center justify-center gap-2">
+              <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+              Signing In...
+            </span>
+            <span v-else>Sign In</span>
+          </button>
+          <p class="text-red-400 text-sm text-center">{{ loginError }}</p>
+        </div>
+
+        <!-- Register Form -->
+        <div v-else class="space-y-4">
+          <div>
+            <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Username</label>
+            <input v-model="regUsername" type="text"
+              class="w-full p-2.5 rounded-lg bg-[#111d26] border text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
+              :class="regUsernameValid ? 'border-cyan-500' : 'border-gray-700'"
+              @input="regUsername = regUsername.toUpperCase()" />
+            <p class="text-[10px] text-gray-500 mt-1 ml-1">e.g. MOEMOE</p>
+          </div>
+          <div>
+            <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Password</label>
+            <input v-model="regPassword" type="password"
+              class="w-full p-2.5 rounded-lg bg-[#111d26] border text-white text-sm focus:outline-none focus:border-cyan-500 transition-colors"
+              :class="regPasswordValid ? 'border-cyan-500' : 'border-gray-700'" />
+            <!-- Strength Meter -->
+            <div class="mt-2 flex gap-1 px-1">
+              <div v-for="n in 3" :key="n" class="h-1.5 flex-1 rounded-full transition-all duration-300" :class="strengthBarClass(n)"></div>
+            </div>
+            <p class="text-[10px] ml-1 transition-colors duration-300" :class="strengthTextColor">{{ strengthLabel }}</p>
+            <p class="text-[10px] text-gray-500 mt-1 ml-1">e.g. moe#223</p>
+          </div>
+          <div>
+            <label class="block text-gray-300 text-xs font-semibold mb-1.5 ml-1">Phone Number</label>
+            <div class="flex items-center bg-[#111d26] rounded-lg border border-gray-700 focus-within:border-cyan-500 transition-colors">
+              <span class="pl-3 pr-2 text-white text-sm">🇲🇲 +95</span>
+              <input v-model="regPhone" type="tel"
+                class="flex-1 p-2.5 bg-transparent border-0 text-white text-sm focus:outline-none placeholder-gray-500"
+                :class="regPhoneValid ? 'border-cyan-500' : 'border-gray-700'"
+                placeholder="9..." />
+            </div>
+            <p class="text-[10px] text-gray-500 mt-1 ml-1">e.g. 09123456789</p>
+          </div>
+          <button @click="doRegister" :disabled="regLoading || !regUsernameValid || !regPasswordValid || !regPhoneValid"
+            class="w-full relative overflow-hidden bg-gradient-to-r from-cyan-500 to-teal-600 text-white font-bold rounded-full shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-200 py-2.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+            <span v-if="regLoading" class="flex items-center justify-center gap-2">
+              <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+              Creating...
+            </span>
+            <span v-else>Join NovaBETT</span>
+          </button>
+          <p class="text-red-400 text-sm text-center">{{ regError }}</p>
+        </div>
+
+        <button @click="showAuthModal = false" class="absolute top-3 right-3 text-gray-500 hover:text-white transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+  </Transition>
+</Teleport>
 
     <!-- Footer Modals -->
     <Teleport to="body">
@@ -412,6 +432,47 @@ async function doLogin() {
 const regUsername = ref('')
 const regPhone = ref('')
 const regPassword = ref('')
+// Password strength logic
+const strengthLevel = computed(() => {
+  const p = regPassword.value
+  if (p.length === 0) return 0
+  let score = 0
+  if (p.length >= 6) score++
+  if (p.length >= 8) score++
+  if (/[A-Z]/.test(p)) score++
+  if (/[0-9]/.test(p)) score++
+  if (/[^A-Za-z0-9]/.test(p)) score++
+  if (score <= 1) return 1
+  if (score <= 3) return 2
+  return 3
+})
+
+const strengthLabel = computed(() => {
+  switch (strengthLevel.value) {
+    case 1: return 'Weak'
+    case 2: return 'Medium'
+    case 3: return 'Strong'
+    default: return ''
+  }
+})
+
+const strengthTextColor = computed(() => {
+  switch (strengthLevel.value) {
+    case 1: return 'text-red-400'
+    case 2: return 'text-orange-400'
+    case 3: return 'text-green-400'
+    default: return 'text-gray-400'
+  }
+})
+
+function strengthBarClass(index) {
+  if (strengthLevel.value >= index) {
+    if (strengthLevel.value === 1) return 'bg-red-500'
+    if (strengthLevel.value === 2) return 'bg-orange-500'
+    return 'bg-green-500'
+  }
+  return 'bg-gray-600'
+}
 const regLoading = ref(false)
 const regError = ref('')
 async function doRegister() {
